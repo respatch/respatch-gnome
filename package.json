@@ -1,0 +1,26 @@
+{
+  "name": "respatch",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "build:ui": "mkdir -p dist/ui && blueprint-compiler compile src/ui/window.blp > dist/ui/window.ui",
+    "build:ts": "esbuild src/main.ts --bundle --format=esm --outfile=dist/main.js --external:gi://*",
+    "build": "npm run build:ui && npm run build:ts",
+    "start": "npm run build && gjs -m dist/main.js",
+    "test": "vitest run"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@girs/adw-1": "^1.10.0-4.0.0-rc.9",
+    "@girs/gio-2.0": "^2.88.0-4.0.0-rc.9",
+    "@girs/glib-2.0": "^2.88.0-4.0.0-rc.9",
+    "@girs/gobject-2.0": "^2.88.0-4.0.0-rc.9",
+    "@girs/gtk-4.0": "^4.23.0-4.0.0-rc.9",
+    "esbuild": "^0.28.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.5"
+  }
+}
