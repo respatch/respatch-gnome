@@ -4,10 +4,11 @@
   "description": "",
   "type": "module",
   "scripts": {
-    "build:ui": "mkdir -p dist/ui && blueprint-compiler compile src/ui/window.blp > dist/ui/window.ui",
-    "build:ts": "esbuild src/main.ts --bundle --format=esm --outfile=dist/main.js --external:gi://*",
-    "build": "npm run build:ui && npm run build:ts",
-    "start": "npm run build && gjs -m dist/main.js",
+    "build:ui": "mkdir -p dist/ui && blueprint-compiler batch-compile dist/ui src/ui src/ui/*.blp",
+    "build:ts": "esbuild src/main.ts --bundle --format=esm --outfile=dist/main.mjs --external:gi://* --external:gettext",
+    "build:schemas": "glib-compile-schemas data/",
+    "build": "npm run build:ui && npm run build:ts && npm run build:schemas",
+    "start": "npm run build && GSETTINGS_SCHEMA_DIR=$(pwd)/data gjs -m dist/main.mjs",
     "test": "vitest run"
   },
   "keywords": [],
@@ -19,6 +20,7 @@
     "@girs/glib-2.0": "^2.88.0-4.0.0-rc.9",
     "@girs/gobject-2.0": "^2.88.0-4.0.0-rc.9",
     "@girs/gtk-4.0": "^4.23.0-4.0.0-rc.9",
+    "@girs/soup-3.0": "^3.6.6-4.0.0-rc.9",
     "esbuild": "^0.28.0",
     "typescript": "^6.0.3",
     "vitest": "^4.1.5"

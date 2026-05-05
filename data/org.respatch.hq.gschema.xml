@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.respatch" path="/org/respatch/hq/">
+    <key name="projects" type="as">
+      <default>[]</default>
+      <summary>Saved projects</summary>
+      <description>JSON strings with project configuration.</description>
+    </key>
+    <key name="last-active-project" type="s">
+      <default>""</default>
+      <summary>Last active project</summary>
+      <description>ID or name of the project to open on startup.</description>
+    </key>
+  </schema>
+</schemalist>

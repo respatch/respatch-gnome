@@ -1,0 +1,44 @@
+using Gtk 4.0;
+using Adw 1;
+
+translation-domain "org.respatch.hq";
+
+Adw.Window add_project_dialog {
+    title: _("Pridať projekt");
+    default-width: 450;
+    default-height: 350;
+    modal: true;
+
+    Adw.ToastOverlay toast_overlay {
+        Adw.ToolbarView {
+            [top]
+        Adw.HeaderBar {
+            show-end-title-buttons: false;
+            show-start-title-buttons: false;
+            [start]
+            Gtk.Button cancel_button {
+                label: _("Zrušiť");
+            }
+            [end]
+            Gtk.Button action_button {
+                label: _("Overiť");
+                styles ["suggested-action"]
+            }
+        }
+
+        content: Adw.PreferencesPage {
+            Adw.PreferencesGroup {
+                Adw.EntryRow name_input {
+                    title: _("Názov projektu");
+                }
+                Adw.EntryRow url_input {
+                    title: _("URL adresa API");
+                }
+                Adw.PasswordEntryRow token_input {
+                    title: _("Secret kód (Token)");
+                }
+            }
+        };
+    }
+    }
+}

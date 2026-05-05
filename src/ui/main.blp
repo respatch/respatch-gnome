@@ -1,0 +1,150 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.ApplicationWindow window {
+    default-width: 1100;
+    default-height: 750;
+    title: "Respatch";
+
+    Adw.ToastOverlay {
+
+        Adw.NavigationSplitView {
+
+            // --- ĽAVÝ BOČNÝ PANEL ---
+            sidebar: Adw.NavigationPage {
+                title: "Respatch";
+
+                Adw.ToolbarView {
+                    [top]
+                    Adw.HeaderBar {
+                        [start]
+                        Gtk.Button { icon-name: "view-refresh-symbolic"; tooltip-text: "Načítať znova"; }
+                    }
+
+                    content: Gtk.ScrolledWindow {
+                        Gtk.ListBox {
+                            styles ["navigation-sidebar"]
+                            selection-mode: single;
+
+                            Adw.ActionRow {
+                                title: "Dashboard";
+                                [prefix] Gtk.Image { icon-name: "utilities-system-monitor-symbolic"; }
+                            }
+                            Adw.ActionRow {
+                                title: "Zlyhané správy";
+                                subtitle: "3 čakajú na zásah";
+                                [prefix] Gtk.Image { icon-name: "dialog-error-symbolic"; styles ["error"] }
+                            }
+                            Adw.ActionRow {
+                                title: "async";
+                                subtitle: "6 workerov";
+                                [prefix] Gtk.Image { icon-name: "network-server-symbolic"; }
+                            }
+                            Adw.ActionRow {
+                                title: "async-low";
+                                subtitle: "0 workerov";
+                                [prefix] Gtk.Image { icon-name: "network-server-symbolic"; }
+                            }
+                        }
+                    };
+                }
+            };
+
+            // --- HLAVNÁ PLOCHA SO SPRÁVAMI ---
+            content: Adw.NavigationPage {
+                title: "async (6 workerov)";
+
+                Adw.ToolbarView {
+                    [top]
+                    Adw.HeaderBar {
+                        [end]
+                        Gtk.Button { icon-name: "media-playback-pause-symbolic"; tooltip-text: "Zastaviť všetky workery"; }
+                        [end]
+                        Gtk.MenuButton { icon-name: "open-menu-symbolic"; }
+                    }
+
+                    content: Gtk.ScrolledWindow {
+
+                        // CLAMP vycentruje obsah a obmedzí jeho maximálnu šírku
+                        Adw.Clamp {
+                            maximum-size: 850;
+                            margin-top: 32;
+                            margin-bottom: 32;
+                            margin-start: 16;
+                            margin-end: 16;
+
+                            Gtk.Box {
+                                orientation: vertical;
+                                spacing: 32;
+
+                                // --- BLOK 1: ZLYHANÉ SPRÁVY ---
+                                Adw.PreferencesGroup {
+                                    title: "Zlyhané (Vyžadujú pozornosť)";
+
+                                    Gtk.ListBox {
+                                        styles ["boxed-list"]
+                                        selection-mode: none;
+
+                                        Adw.ActionRow {
+                                            title: "App\\Message\\ProcessVideo";
+                                            subtitle: "FFmpeg process crashed unexpectedly • pred 2 minútami";
+                                            title-lines: 1;
+                                            subtitle-lines: 1;
+
+                                            [prefix]
+                                            Gtk.Image { icon-name: "dialog-error-symbolic"; styles ["error"] }
+
+                                            [suffix]
+                                            Gtk.Label { label: "125 ms"; styles ["dim-label"] }
+
+                                            [suffix]
+                                            Gtk.Button {
+                                                label: "Retry";
+                                                valign: center;
+                                                styles ["pill", "suggested-action"]
+                                            }
+                                        }
+                                    }
+                                }
+
+                                // --- BLOK 2: ÚSPEŠNÉ SPRÁVY ---
+                                Adw.PreferencesGroup {
+                                    title: "Nedávno spracované (Posledných 15)";
+
+                                    Gtk.ListBox {
+                                        styles ["boxed-list"]
+                                        selection-mode: none;
+
+                                        Adw.ActionRow {
+                                            title: "SendEmailMessage";
+                                            subtitle: "Ticket #16412024 • pred 14 sekundami";
+                                            [prefix] Gtk.Image { icon-name: "emblem-ok-symbolic"; }
+                                            [suffix] Gtk.Label { label: "68 ms"; styles ["dim-label"] }
+                                            [suffix] Gtk.Button { icon-name: "go-next-symbolic"; valign: center; styles ["flat"] }
+                                        }
+
+                                        Adw.ActionRow {
+                                            title: "AdminNotification";
+                                            subtitle: "Záloha databázy dokončená • pred 21 sekundami";
+                                            [prefix] Gtk.Image { icon-name: "emblem-ok-symbolic"; }
+                                            [suffix] Gtk.Label { label: "2 ms"; styles ["dim-label"] }
+                                            [suffix] Gtk.Button { icon-name: "go-next-symbolic"; valign: center; styles ["flat"] }
+                                        }
+
+                                        Adw.ActionRow {
+                                            title: "SendEmailMessage";
+                                            subtitle: "Partner produkt - technické šetrenie • pred minútou";
+                                            [prefix] Gtk.Image { icon-name: "emblem-ok-symbolic"; }
+                                            [suffix] Gtk.Label { label: "174 ms"; styles ["dim-label"] }
+                                            [suffix] Gtk.Button { icon-name: "go-next-symbolic"; valign: center; styles ["flat"] }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    };
+                }
+            };
+        }
+    }
+}
