@@ -8,15 +8,56 @@ PRI GENEROVANÍ KÓDU STRIKTNE DODRŽUJ TIETO PRAVIDLÁ:
 
 Si hlavný architekt Respatch aplikácie. Tvojou úlohou je udržiavať kód modulárny, testovateľný a v súlade s GNOME Human Interface Guidelines.
 
-## Architektúra projektu
-- **UI Vrstva (View):** `src/ui/*.blp` a k nim prislúchajúce `window.ts` alebo `widgets/*.ts`. Tieto súbory riešia len zobrazenie a signály.
-- **Logika (Services/Models):** `src/services/` (napr. `ApiClient.ts`, `MonitorService.ts`). Tieto triedy nesmú vedieť o existencii GTK widgetov. Vracajú čisté TS rozhrania (Interfaces).
-- **Stavy (ViewModel/Stores):** `src/stores/`. Tu sa drží aktuálny stav aplikácie (napr. zoznam workerov). UI sa len "prihlási" k odberu zmien.
+## Dôležité pravidlá pre Agenta
+- **GObject registrácia**: Triedy dediace od GObjectu (napr. `Application`, `ProjectStore`) MUSIA byť registrované cez `GObject.registerClass`.
+- **Žiadne Node.js moduly**: V `src/` používaj výhradne `gi://` importy (Gio, GLib, atď.). Node.js moduly sú povolené len v `tests/`.
+- **Testovanie**: Každá nová logika v `services` alebo `stores` musí mať zodpovedajúci test v `tests/`.
+- **Build proces**: Po každej zmene v UI (`.blp`) alebo TS spustite `npm run build`, aby sa vygenerovali súbory v `dist/`.
 
 ## Kódovacie pravidlá pre Agenta
 - **Single Responsibility:** Jedna trieda = jedna zodpovednosť. `ApiClient` nerieši ukladanie tokenu do nastavení, na to máš `SettingsService`.
 - **Inversion of Control:** Triedy by mali prijímať svoje závislosti (napr. ApiClient) v konštruktore, aby sa dali v testoch ľahko mockovať cez MSW.
 - **Signals:** Využívaj GObject signály pre komunikáciu medzi modelom a UI. UI počúva na signál `notify::something`.
+
+
+
+
+# Architektúra projektu - Štruktúra projektu a MVVM
+
+Tento projekt využíva dekomponovanú architektúru MVVM pre GJS (GNOME JavaScript) s GTK4 a Libadwaita.
+
+## Adresárová štruktúra
+
+- **`src/main.ts`**: Len 4-riadkový bootstrap. Spúšťa `Application.ts`.
+- **`src/Application.ts`**: Podtrieda `Adw.Application`. Tu sa inicializujú všetky globálne služby (Logger, ApiClient, ProjectStore) a WindowManager.
+- **`src/WindowManager.ts`**: Centrálny bod pre navigáciu. Okná si vyžadujú prepnutie/otvorenie iných okien cez túto triedu.
+- **`src/services/`**: Čistá biznis logika (Model). Nesmú obsahovať GTK widgety.
+  - `ApiClient.ts`: Komunikácia so serverom cez fetch.
+  - `LoggerService.ts`: Logovanie s podporou Console a File transportov.
+  - `SettingsService.ts`: Priamy prístup k GSettings (Gio.Settings).
+- **`src/stores/`**: Správa stavu aplikácie (ViewModel).
+  - `ProjectStore.ts`: Drží zoznam projektov a aktívny projekt. Dedič od `GObject.Object`, emituje signály `notify::` pri zmene.
+- **`src/ui/`**: Definícia používateľského rozhrania (View).
+  - `src/ui/windows/`: Triedy spravujúce hlavné okná (`MainWindow`, `WelcomeWindow`, `SettingsWindow`).
+  - `src/ui/dialogs/`: Triedy pre modálne dialógy (`AddProjectDialog`).
+  - `src/ui/*.blp`: Zdrojové súbory pre Blueprint compiler (kompilujú sa do `.ui`).
+- **`src/models/`**: TypeScript interfaces a čisté dátové štruktúry (napr. `Project.ts`).
+- **`data/`**: XML schémy pre GSettings (`org.respatch.hq.gschema.xml`).
+- **`tests/`**: Vitest testy, MSW mocky pre API a testovacie utility.
+
+## Ako sa štruktúra používa
+
+1. **Pridanie nového okna**:
+- Vytvor `.blp` súbor v `src/ui/`.
+- Vytvor TS triedu v `src/ui/windows/` (pre okno) alebo `src/ui/dialogs/` (pre dialóg).
+- Pridaj metódu na zobrazenie okna do `WindowManager.ts`.
+2. **Práca s dátami a stavom**:
+- Dáta sa sťahujú cez `ApiClient`.
+- Perzistencia sa rieši cez `SettingsService`.
+- Aktuálny stav aplikácie (napr. vybraný projekt) spravuje `ProjectStore`.
+3. **Prepojenie UI so stavom**:
+- UI triedy si v konštruktore preberajú potrebný Store.
+- Reagujú na zmeny stavu pomocou signálov: `this.store.connect('notify::active-project', () => this.refresh())`. 
 
 ## 1. Architektúra a GJS Špecifiká (VEĽMI DÔLEŽITÉ)
 - **Toto NIE JE Node.js:** Aplikácia beží v GJS (SpiderMonkey). Absolútne NIKDY nepoužívaj Node.js moduly ako `fs`, `path`, `os`, `net`, `http`.

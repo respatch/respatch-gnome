@@ -18,7 +18,12 @@ Adw.ApplicationWindow window {
                     [top]
                     Adw.HeaderBar {
                         [start]
-                        Gtk.Button { icon-name: "view-refresh-symbolic"; tooltip-text: "Načítať znova"; }
+                        Gtk.Button { icon-name: "view-refresh-symbolic"; tooltip-text: _("Načítať znova"); }
+                        [end]
+                        Gtk.Button settings_button {
+                            icon-name: "emblem-system-symbolic";
+                            tooltip-text: _("Nastavenia");
+                        }
                     }
 
                     content: Gtk.ScrolledWindow {

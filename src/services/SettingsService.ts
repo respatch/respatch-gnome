@@ -27,4 +27,20 @@ export class SettingsService {
     public setActiveProject(projectId: string): void {
         this.settings.set_string('last-active-project', projectId);
     }
+
+    public getLoggingEnabled(): boolean {
+        return this.settings.get_boolean('logging-enabled');
+    }
+
+    public setLoggingEnabled(enabled: boolean): void {
+        this.settings.set_boolean('logging-enabled', enabled);
+    }
+
+    public getLogToFile(): boolean {
+        return this.settings.get_boolean('log-to-file');
+    }
+
+    public setLogToFile(enabled: boolean): void {
+        this.settings.set_boolean('log-to-file', enabled);
+    }
 }

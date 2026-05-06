@@ -11,5 +11,15 @@
       <summary>Last active project</summary>
       <description>ID or name of the project to open on startup.</description>
     </key>
+    <key name="logging-enabled" type="b">
+      <default>true</default>
+      <summary>Enable logging</summary>
+      <description>Whether to enable logging.</description>
+    </key>
+    <key name="log-to-file" type="b">
+      <default>false</default>
+      <summary>Log to file</summary>
+      <description>Whether to log to a file.</description>
+    </key>
   </schema>
 </schemalist>

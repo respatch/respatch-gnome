@@ -1,0 +1,35 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.PreferencesWindow settings_window {
+    title: _("Nastavenia");
+    default-width: 500;
+    default-height: 400;
+
+    Adw.PreferencesPage {
+        title: _("Diagnostika");
+        icon-name: "utilities-system-monitor-symbolic";
+
+        Adw.PreferencesGroup {
+            title: _("Logovanie");
+            description: _("Konfigurácia diagnostických záznamov aplikácie.");
+
+            Adw.SwitchRow logging_enabled_row {
+                title: _("Povoliť logovanie");
+                subtitle: _("Zaznamenávať informácie o behu aplikácie pre účely ladenia.");
+            }
+
+            Adw.SwitchRow log_to_file_row {
+                title: _("Zapisovať logy do súboru");
+                subtitle: _("Ukladať záznamy do ~/.local/share/respatch/respatch.log");
+                sensitive: bind logging_enabled_row.active;
+            }
+
+            Adw.ActionRow {
+                title: _("Cesta k logu");
+                subtitle: "~/.local/share/respatch/respatch.log";
+                selectable: true;
+            }
+        }
+    }
+}
