@@ -10,7 +10,7 @@ afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 describe('ApiClient', () => {
-    const client = new ApiClient();
+    const client = new ApiClient((url, init) => fetch(url as string, init as RequestInit));
 
     it('should verify project with valid token', async () => {
         await expect(client.verifyProject('https://example.com', 'valid-token')).resolves.not.toThrow();

@@ -32,23 +32,84 @@ Adw.ApplicationWindow window {
                             selection-mode: single;
 
                             Adw.ActionRow {
-                                title: "Dashboard";
+                                title: _("Dashboard");
                                 [prefix] Gtk.Image { icon-name: "utilities-system-monitor-symbolic"; }
                             }
                             Adw.ActionRow {
-                                title: "Zlyhané správy";
-                                subtitle: "3 čakajú na zásah";
+                                title: _("Zlyhané správy");
+                                subtitle: _("3 čakajú na zásah");
                                 [prefix] Gtk.Image { icon-name: "dialog-error-symbolic"; styles ["error"] }
                             }
                             Adw.ActionRow {
-                                title: "async";
-                                subtitle: "6 workerov";
+                                title: "sync";
+                                subtitle: _("3 workery • 40 MB");
                                 [prefix] Gtk.Image { icon-name: "network-server-symbolic"; }
+
+                                [suffix] Gtk.Box {
+                                    valign: center;
+                                    spacing: 6;
+
+                                    // Busy pracovníci
+                                    Gtk.Label {
+                                        label: "2";
+                                        styles ["is-busy", "numeric-badge"]
+                                    }
+
+                                    // Idle pracovníci
+                                    Gtk.Label {
+                                        label: "4";
+                                        styles ["is-idle", "numeric-badge"]
+                                    }
+                                }
                             }
-                            Adw.ActionRow {
-                                title: "async-low";
-                                subtitle: "0 workerov";
-                                [prefix] Gtk.Image { icon-name: "network-server-symbolic"; }
+                            Gtk.ListBoxRow {
+                                styles ["navigation-sidebar"]
+
+                                Gtk.Box {
+                                    orientation: vertical;
+                                    spacing: 4;
+                                    margin-start: 12;
+                                    margin-end: 12;
+                                    margin-top: 8;
+                                    margin-bottom: 8;
+
+                                    Gtk.Box {
+                                        orientation: horizontal;
+                                        spacing: 12;
+
+                                        Gtk.Image {
+                                            icon-name: "network-server-symbolic";
+                                            valign: center;
+                                        }
+
+                                        Gtk.Label {
+                                            label: "async2";
+                                            hexpand: true;
+                                            halign: start;
+                                            styles ["title"]
+                                        }
+
+                                    }
+
+                                    Gtk.Label {
+                                        label: _("5 workerov • 124 MB RAM");
+                                        halign: start;
+                                        styles ["caption"]
+                                    }
+
+                                    Gtk.ProgressBar worker_load_bar2 {
+                                        fraction: 0.33;
+                                        margin-top: 4;
+                                        styles ["worker-progress"]
+                                    }
+
+                                    Gtk.Label {
+                                        label: _("2 zaneprázdnení");
+                                        halign: end;
+                                        opacity: 0.7;
+                                        styles ["caption"]
+                                    }
+                                }
                             }
                         }
                     };
@@ -63,7 +124,7 @@ Adw.ApplicationWindow window {
                     [top]
                     Adw.HeaderBar {
                         [end]
-                        Gtk.Button { icon-name: "media-playback-pause-symbolic"; tooltip-text: "Zastaviť všetky workery"; }
+                        Gtk.Button { icon-name: "media-playback-pause-symbolic"; tooltip-text: _("Zastaviť všetky workery"); }
                         [end]
                         Gtk.MenuButton { icon-name: "open-menu-symbolic"; }
                     }
@@ -84,7 +145,7 @@ Adw.ApplicationWindow window {
 
                                 // --- BLOK 1: ZLYHANÉ SPRÁVY ---
                                 Adw.PreferencesGroup {
-                                    title: "Zlyhané (Vyžadujú pozornosť)";
+                                    title: _("Zlyhané (Vyžadujú pozornosť)");
 
                                     Gtk.ListBox {
                                         styles ["boxed-list"]
@@ -92,7 +153,7 @@ Adw.ApplicationWindow window {
 
                                         Adw.ActionRow {
                                             title: "App\\Message\\ProcessVideo";
-                                            subtitle: "FFmpeg process crashed unexpectedly • pred 2 minútami";
+                                            subtitle: _("FFmpeg process crashed unexpectedly • pred 2 minútami");
                                             title-lines: 1;
                                             subtitle-lines: 1;
 
@@ -104,7 +165,7 @@ Adw.ApplicationWindow window {
 
                                             [suffix]
                                             Gtk.Button {
-                                                label: "Retry";
+                                                label: _("Retry");
                                                 valign: center;
                                                 styles ["pill", "suggested-action"]
                                             }
@@ -114,7 +175,7 @@ Adw.ApplicationWindow window {
 
                                 // --- BLOK 2: ÚSPEŠNÉ SPRÁVY ---
                                 Adw.PreferencesGroup {
-                                    title: "Nedávno spracované (Posledných 15)";
+                                    title: _("Nedávno spracované (Posledných 15)");
 
                                     Gtk.ListBox {
                                         styles ["boxed-list"]
@@ -122,7 +183,7 @@ Adw.ApplicationWindow window {
 
                                         Adw.ActionRow {
                                             title: "SendEmailMessage";
-                                            subtitle: "Ticket #16412024 • pred 14 sekundami";
+                                            subtitle: _("Ticket #16412024 • pred 14 sekundami");
                                             [prefix] Gtk.Image { icon-name: "emblem-ok-symbolic"; }
                                             [suffix] Gtk.Label { label: "68 ms"; styles ["dim-label"] }
                                             [suffix] Gtk.Button { icon-name: "go-next-symbolic"; valign: center; styles ["flat"] }
@@ -130,7 +191,7 @@ Adw.ApplicationWindow window {
 
                                         Adw.ActionRow {
                                             title: "AdminNotification";
-                                            subtitle: "Záloha databázy dokončená • pred 21 sekundami";
+                                            subtitle: _("Záloha databázy dokončená • pred 21 sekundami");
                                             [prefix] Gtk.Image { icon-name: "emblem-ok-symbolic"; }
                                             [suffix] Gtk.Label { label: "2 ms"; styles ["dim-label"] }
                                             [suffix] Gtk.Button { icon-name: "go-next-symbolic"; valign: center; styles ["flat"] }
@@ -138,7 +199,7 @@ Adw.ApplicationWindow window {
 
                                         Adw.ActionRow {
                                             title: "SendEmailMessage";
-                                            subtitle: "Partner produkt - technické šetrenie • pred minútou";
+                                            subtitle: _("Partner produkt - technické šetrenie • pred minútou");
                                             [prefix] Gtk.Image { icon-name: "emblem-ok-symbolic"; }
                                             [suffix] Gtk.Label { label: "174 ms"; styles ["dim-label"] }
                                             [suffix] Gtk.Button { icon-name: "go-next-symbolic"; valign: center; styles ["flat"] }

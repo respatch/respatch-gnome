@@ -1,8 +1,10 @@
 import Adw from 'gi://Adw?version=1';
+import Gtk from 'gi://Gtk?version=4.0';
+import Gdk from 'gi://Gdk?version=4.0';
 import GObject from 'gi://GObject';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
-import './libs/fetch.js';
+import { gjsFetch } from './libs/fetch.js';
 import { SettingsService } from './services/SettingsService.js';
 import { ProjectStore } from './stores/ProjectStore.js';
 import { ApiClient } from './services/ApiClient.js';
@@ -47,7 +49,9 @@ export const Application = GObject.registerClass({
         this.logger = new LoggerService(transports, loggingEnabled);
         this.logger.info('Application activated');
 
-        this.apiClient = new ApiClient();
+        this._loadStyle();
+
+        this.apiClient = new ApiClient(gjsFetch);
         this.projectStore = new ProjectStore(this.settingsService);
         this.windowManager = new WindowManager(
             this,
@@ -62,6 +66,24 @@ export const Application = GObject.registerClass({
             this.windowManager.showMain();
         } else {
             this.windowManager.showWelcome();
+        }
+    }
+
+    private _loadStyle() {
+        const provider = new Gtk.CssProvider();
+        const stylePath = GLib.build_filenamev([this.uiDir, 'ui', 'style.css']);
+        const styleFile = Gio.File.new_for_path(stylePath);
+        
+        try {
+            provider.load_from_file(styleFile);
+            Gtk.StyleContext.add_provider_for_display(
+                Gdk.Display.get_default()!,
+                provider,
+                Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+            );
+            this.logger.info(`CSS loaded from ${stylePath}`);
+        } catch (e) {
+            this.logger.error(`Failed to load CSS from ${stylePath}: ${e}`);
         }
     }
 });

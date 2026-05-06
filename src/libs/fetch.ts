@@ -1,102 +1,117 @@
+// @ts-ignore
 import Soup from 'gi://Soup?version=3.0';
+import GLib from 'gi://GLib';
+import Gio from "gi://Gio";
 
-type Fetch = typeof fetch;
-
-declare global {
-    const fetch: Fetch;
-}
-
-class Response {
-    session: Soup.Session;
-    message: Soup.Message;
-    url?: string;
-    headers?: Soup.MessageHeaders;
-    status?: number;
-    statusText?: string;
-    ok?: boolean;
-    response: Promise<Soup.Message>;
-
-    constructor(session: Soup.Session, message: Soup.Message) {
-        this.session = session;
-        this.message = message;
-        this.response = this.retrieveResponse();
-    }
-
-    private async retrieveResponse() {
-        if (this.response) {
-            return this.response;
-        }
-        return new Promise<Soup.Message>((resolve) => {
-            this.session.queue_message(this.message, (_, message) => {
-                console.log("request", message.request_body.data);
-                console.log("response", message.response_body.data);
-                this.headers = message.response_headers;
-
-                this.url = message.get_uri().to_string(false);
-
-                this.status = message.status_code;
-                this.statusText = Soup.status_get_phrase(this.status);
-
-                this.ok = this.status === Soup.Status.OK;
-
-                this.message = message;
-
-                resolve(message);
-            });
-        });
-    }
-
-    async blob() {
-        const response = await this.retrieveResponse();
-        return response.response_body.data;
-    }
-
-    async text() {
-        const response = await this.retrieveResponse();
-        return response.response_body.data.toString();
-    }
-
-    async json() {
-        const response = await this.retrieveResponse();
-        return JSON.parse(response.response_body.data.toString());
-    }
-}
+/**
+ * Minimal subset of the standard `fetch` API implemented on top of libsoup 3.
+ * Supports: method, headers, body (string), status, ok, statusText, text(), json().
+ */
 
 type FetchOptions = {
-    method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+    method?: string;
     body?: string;
-    headers?: Record<string, string>;
+    headers?: Record<string, string> | Array<[string, string]>;
 };
 
-export const fetch = (uri: string, options: FetchOptions = {}) => {
-    return new Promise((resolve) => {
-        let session = new Soup.SessionAsync({ user_agent: "Mozilla/5.0" });
+interface IResponse {
+    status: number;
+    statusText: string;
+    ok: boolean;
+    url: string;
+    headers: Record<string, string>;
+    text(): Promise<string>;
+    json(): Promise<unknown>;
+}
 
-        Soup.Session.prototype.add_feature.call(
-            session,
-            new Soup.ProxyResolverDefault()
-        );
+class GjsResponse implements IResponse {
+    status: number;
+    statusText: string;
+    ok: boolean;
+    url: string;
+    headers: Record<string, string>;
+    private bodyBytes: Uint8Array;
 
-        let message = new Soup.Message({
-            method: options.method || "GET",
-            uri: new Soup.URI(uri),
-        });
+    constructor(status: number, statusText: string, url: string, headers: Record<string, string>, bodyBytes: Uint8Array) {
+        this.status = status;
+        this.statusText = statusText;
+        this.ok = status >= 200 && status < 300;
+        this.url = url;
+        this.headers = headers;
+        this.bodyBytes = bodyBytes;
+    }
 
-        if (options.body) {
-            console.log("body", options.body);
-            console.log("body type", typeof options.body);
-            message.request_body.append(options.body);
-        }
+    async text(): Promise<string> {
+        const decoder = new TextDecoder('utf-8');
+        return decoder.decode(this.bodyBytes);
+    }
 
-        if (options.headers) {
-            for (const [key, value] of Object.entries(options.headers)) {
-                console.log("header %s = %s", key, value);
-                message.request_headers.append(key, value);
+    async json(): Promise<unknown> {
+        return JSON.parse(await this.text());
+    }
+}
+
+function normalizeHeaders(input?: FetchOptions['headers']): Array<[string, string]> {
+    if (!input) return [];
+    if (Array.isArray(input)) return input;
+    return Object.entries(input);
+}
+
+export const gjsFetch = (uri: string, options: FetchOptions = {}): Promise<IResponse> => {
+    return new Promise((resolve, reject) => {
+        try {
+            const session = new Soup.Session({ user_agent: 'respatch/1.0 (gjs)' });
+
+            const method = (options.method || 'GET').toUpperCase();
+            const message = Soup.Message.new(method, uri);
+            if (!message) {
+                reject(new Error(`Invalid URI: ${uri}`));
+                return;
             }
-        }
 
-        resolve(new Response(session, message));
+            for (const [key, value] of normalizeHeaders(options.headers)) {
+                message.get_request_headers().append(key, value);
+            }
+
+            if (options.body !== undefined && options.body !== null) {
+                const encoder = new TextEncoder();
+                const bytes = encoder.encode(options.body);
+                const glibBytes = new GLib.Bytes(bytes);
+                message.set_request_body_from_bytes('application/octet-stream', glibBytes);
+            }
+
+            session.send_and_read_async(
+                message,
+                GLib.PRIORITY_DEFAULT,
+                null,
+                (sess: Soup.Session | null, result: Gio.AsyncResult) => {
+                    try {
+                        const s = sess ?? session;
+                        const bytes = s.send_and_read_finish(result);
+                        const status = message.get_status();
+                        const reason = message.get_reason_phrase() || '';
+                        const finalUri = message.get_uri();
+                        const url = finalUri ? finalUri.to_string() : uri;
+
+                        const headers: Record<string, string> = {};
+                        message.get_response_headers().foreach((name: string, value: string) => {
+                            headers[name.toLowerCase()] = value;
+                        });
+
+                        const data = bytes ? bytes.get_data() : null;
+                        const u8 = data ? new Uint8Array(data) : new Uint8Array(0);
+
+                        resolve(new GjsResponse(status, reason, url, headers, u8));
+                    } catch (e) {
+                        reject(e instanceof Error ? e : new Error(String(e)));
+                    }
+                },
+            );
+        } catch (e) {
+            reject(e instanceof Error ? e : new Error(String(e)));
+        }
     });
 };
 
-Object.assign(globalThis, { fetch });
+export type FetchFn = (uri: string, options?: FetchOptions) => Promise<IResponse>;
+export type { IResponse, FetchOptions };

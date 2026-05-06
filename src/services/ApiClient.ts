@@ -1,7 +1,25 @@
+import type { FetchFn } from '../libs/fetch.js';
+
+/**
+ * Generic fetch-like signature accepted by ApiClient.
+ * Both the standard browser/Vitest `fetch` and our GJS Soup-based wrapper
+ * (`gjsFetch` from src/libs/fetch.ts) satisfy this contract for our usage.
+ */
+export type ApiFetch = FetchFn | typeof fetch;
+
 export class ApiClient {
     private baseUrl: string;
+    private fetchFn: ApiFetch;
 
-    constructor(baseUrl: string = '') {
+    /**
+     * @param fetchFn fetch implementation (real `fetch` for tests/Node, `gjsFetch` for GJS runtime)
+     * @param baseUrl optional base URL prefix
+     */
+    constructor(fetchFn: ApiFetch, baseUrl: string = '') {
+        if (typeof fetchFn !== 'function') {
+            throw new Error('ApiClient requires a fetch function');
+        }
+        this.fetchFn = fetchFn;
         this.baseUrl = baseUrl.replace(/\/+$/, '');
     }
 
@@ -13,9 +31,9 @@ export class ApiClient {
      */
     async verifyProject(url: string, token: string): Promise<void> {
         const endpoint = url.replace(/\/+$/, '') + '/status';
-        
+
         try {
-            const response = await fetch(endpoint, {
+            const response = await this.fetchFn(endpoint, {
                 method: 'GET',
                 headers: {
                     'X-Respatch-Token': token,

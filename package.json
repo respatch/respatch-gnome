@@ -4,7 +4,7 @@
   "description": "",
   "type": "module",
   "scripts": {
-    "build:ui": "mkdir -p dist/ui && blueprint-compiler batch-compile dist/ui src/ui src/ui/*.blp",
+    "build:ui": "mkdir -p dist/ui && blueprint-compiler batch-compile dist/ui src/ui src/ui/*.blp && cp src/ui/*.css dist/ui/ 2>/dev/null || true",
     "build:ts": "esbuild src/main.ts --bundle --format=esm --outfile=dist/main.mjs --external:gi://* --external:gettext",
     "build:schemas": "glib-compile-schemas data/",
     "build": "npm run build:ui && npm run build:ts && npm run build:schemas",
