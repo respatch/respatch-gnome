@@ -1,0 +1,22 @@
+using Gtk 4.0;
+using Adw 1;
+
+translation-domain "org.respatch.hq";
+
+Adw.PreferencesWindow manage_servers_window {
+    title: _("Spravovať servery");
+    default-width: 500;
+    default-height: 400;
+
+    Adw.PreferencesPage {
+        Adw.PreferencesGroup servers_group {
+            title: _("Servery");
+            [header-suffix]
+            Gtk.Button add_server_button {
+                icon-name: "list-add-symbolic";
+                tooltip-text: _("Pridať server");
+                styles ["flat"]
+            }
+        }
+    }
+}

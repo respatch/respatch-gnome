@@ -5,10 +5,12 @@ import { _ } from '../../gettext.js';
 import { ApiClient } from '../../services/ApiClient.js';
 import { ProjectStore } from '../../stores/ProjectStore.js';
 import { LoggerService } from '../../services/LoggerService.js';
+import { Project } from '../../models/Project.js';
 
 export class AddProjectDialog {
     private dialog: Adw.Window;
     private state: 'verify' | 'add' | 'error' = 'verify';
+    private existingProject?: Project;
     
     private nameInput: Adw.EntryRow;
     private urlInput: Adw.EntryRow;
@@ -22,8 +24,10 @@ export class AddProjectDialog {
         private apiClient: ApiClient,
         private store: ProjectStore,
         private logger: LoggerService,
-        private onSuccess: () => void
+        private onSuccess: () => void,
+        existingProject?: Project
     ) {
+        this.existingProject = existingProject;
         const builder = new Gtk.Builder();
         builder.add_from_file(`${uiDir}/ui/add_project_dialog.ui`);
 
@@ -52,6 +56,17 @@ export class AddProjectDialog {
         this.nameInput.connect('notify::text', resetState);
         this.urlInput.connect('notify::text', resetState);
         this.tokenInput.connect('notify::text', resetState);
+
+        if (this.existingProject) {
+            this.nameInput.set_text(this.existingProject.name);
+            this.urlInput.set_text(this.existingProject.url);
+            this.tokenInput.set_text(this.existingProject.token);
+            this.dialog.set_title(_("Upraviť projekt"));
+            this.state = 'add';
+            this.actionBtn.set_label(_('Uložiť'));
+            this.actionBtn.remove_css_class('suggested-action');
+            this.actionBtn.add_css_class('success');
+        }
 
         this.actionBtn.connect('clicked', () => this.handleAction());
     }
@@ -101,11 +116,16 @@ export class AddProjectDialog {
     }
 
     private saveAndClose(name: string, url: string, token: string) {
-        const project = { id: GLib.uuid_string_random(), name, url, token };
-        this.logger.info(`Saving new project: ${name} (${project.id})`);
-        
-        this.store.addProject(project);
-        this.store.setActiveProject(project.id);
+        if (this.existingProject) {
+            const project = { id: this.existingProject.id, name, url, token };
+            this.logger.info(`Updating project: ${name} (${project.id})`);
+            this.store.updateProject(project);
+        } else {
+            const project = { id: GLib.uuid_string_random(), name, url, token };
+            this.logger.info(`Saving new project: ${name} (${project.id})`);
+            this.store.addProject(project);
+            this.store.setActiveProject(project.id);
+        }
 
         this.dialog.close();
         this.onSuccess();

@@ -3,6 +3,7 @@ import Gtk from 'gi://Gtk?version=4.0';
 import { WelcomeWindow } from './ui/windows/WelcomeWindow.js';
 import { MainWindow } from './ui/windows/MainWindow.js';
 import { SettingsWindow } from './ui/windows/SettingsWindow.js';
+import { ManageServersWindow } from './ui/windows/ManageServersWindow.js';
 import { ProjectStore } from './stores/ProjectStore.js';
 import { ApiClient } from './services/ApiClient.js';
 import { LoggerService } from './services/LoggerService.js';
@@ -36,7 +37,10 @@ export class WindowManager {
         const main = new MainWindow(
             this.app,
             this.uiDir,
-            this
+            this,
+            this.store,
+            this.apiClient,
+            this.logger
         );
         main.present();
     }
@@ -50,5 +54,17 @@ export class WindowManager {
         );
         settings.window.set_transient_for(parent);
         settings.present();
+    }
+
+    showManageServers(parent: Gtk.Window) {
+        this.logger.debug('Opening Manage Servers window');
+        const manageServers = new ManageServersWindow(
+            this.uiDir,
+            this.store,
+            this.apiClient,
+            this.logger
+        );
+        manageServers.window.set_transient_for(parent);
+        manageServers.present();
     }
 }

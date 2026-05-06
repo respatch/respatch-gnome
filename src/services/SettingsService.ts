@@ -20,6 +20,23 @@ export class SettingsService {
         this.settings.set_strv('projects', projectsStr);
     }
 
+    public updateProject(project: Project): void {
+        const projects = this.getProjects();
+        const index = projects.findIndex(p => p.id === project.id);
+        if (index !== -1) {
+            projects[index] = project;
+            const projectsStr = projects.map(p => JSON.stringify(p));
+            this.settings.set_strv('projects', projectsStr);
+        }
+    }
+
+    public removeProject(id: string): void {
+        const projects = this.getProjects();
+        const filtered = projects.filter(p => p.id !== id);
+        const projectsStr = filtered.map(p => JSON.stringify(p));
+        this.settings.set_strv('projects', projectsStr);
+    }
+
     public getActiveProject(): string {
         return this.settings.get_string('last-active-project');
     }

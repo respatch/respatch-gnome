@@ -40,6 +40,22 @@ export const ProjectStore = GObject.registerClass({
         this._settingsService.addProject(project);
     }
 
+    updateProject(project: Project): void {
+        this._settingsService.updateProject(project);
+    }
+
+    removeProject(id: string): void {
+        this._settingsService.removeProject(id);
+        if (this.active_project === id) {
+            const projects = this.getProjects();
+            if (projects.length > 0) {
+                this.setActiveProject(projects[0].id);
+            } else {
+                this.setActiveProject('');
+            }
+        }
+    }
+
     getActiveProject(): Project | null {
         const id = this.active_project;
         if (!id) return null;

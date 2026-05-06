@@ -33,6 +33,8 @@ const mockSettingsService = {
     setActiveProject: vi.fn(),
     getProjects: vi.fn(),
     addProject: vi.fn(),
+    updateProject: vi.fn(),
+    removeProject: vi.fn(),
 };
 
 // We need to import ProjectStore AFTER mocking
@@ -58,6 +60,35 @@ describe('ProjectStore', () => {
         const project = { id: '1', name: 'Test', url: '', token: '' };
         store.addProject(project);
         expect(mockSettingsService.addProject).toHaveBeenCalledWith(project);
+    });
+
+    it('should update project via settings service', () => {
+        const project = { id: '1', name: 'Test Updated', url: '', token: '' };
+        store.updateProject(project);
+        expect(mockSettingsService.updateProject).toHaveBeenCalledWith(project);
+    });
+
+    it('should remove project via settings service and clear active project if it was active and no others left', () => {
+        mockSettingsService.getActiveProject.mockReturnValue('1');
+        mockSettingsService.getProjects.mockReturnValue([]);
+        store.removeProject('1');
+        expect(mockSettingsService.removeProject).toHaveBeenCalledWith('1');
+        expect(mockSettingsService.setActiveProject).toHaveBeenCalledWith('');
+    });
+
+    it('should remove project via settings service and set next active project if it was active and others exist', () => {
+        mockSettingsService.getActiveProject.mockReturnValue('1');
+        mockSettingsService.getProjects.mockReturnValue([{ id: '2', name: 'Other', url: '', token: '' }]);
+        store.removeProject('1');
+        expect(mockSettingsService.removeProject).toHaveBeenCalledWith('1');
+        expect(mockSettingsService.setActiveProject).toHaveBeenCalledWith('2');
+    });
+
+    it('should remove project via settings service without changing active project if a different one was removed', () => {
+        mockSettingsService.getActiveProject.mockReturnValue('2');
+        store.removeProject('1');
+        expect(mockSettingsService.removeProject).toHaveBeenCalledWith('1');
+        expect(mockSettingsService.setActiveProject).not.toHaveBeenCalled();
     });
 
     it('should correctly report if active project exists', () => {

@@ -17,8 +17,17 @@ Adw.ApplicationWindow window {
                 Adw.ToolbarView {
                     [top]
                     Adw.HeaderBar {
+                        [title]
+                        Gtk.DropDown server_switcher {
+                            tooltip-text: _("Prepnúť server");
+                        }
                         [start]
                         Gtk.Button { icon-name: "view-refresh-symbolic"; tooltip-text: _("Načítať znova"); }
+                        [end]
+                        Gtk.Button manage_servers_button {
+                            icon-name: "network-server-symbolic";
+                            tooltip-text: _("Spravovať servery");
+                        }
                         [end]
                         Gtk.Button settings_button {
                             icon-name: "emblem-system-symbolic";
@@ -39,28 +48,6 @@ Adw.ApplicationWindow window {
                                 title: _("Zlyhané správy");
                                 subtitle: _("3 čakajú na zásah");
                                 [prefix] Gtk.Image { icon-name: "dialog-error-symbolic"; styles ["error"] }
-                            }
-                            Adw.ActionRow {
-                                title: "sync";
-                                subtitle: _("3 workery • 40 MB");
-                                [prefix] Gtk.Image { icon-name: "network-server-symbolic"; }
-
-                                [suffix] Gtk.Box {
-                                    valign: center;
-                                    spacing: 6;
-
-                                    // Busy pracovníci
-                                    Gtk.Label {
-                                        label: "2";
-                                        styles ["is-busy", "numeric-badge"]
-                                    }
-
-                                    // Idle pracovníci
-                                    Gtk.Label {
-                                        label: "4";
-                                        styles ["is-idle", "numeric-badge"]
-                                    }
-                                }
                             }
                             Gtk.ListBoxRow {
                                 styles ["navigation-sidebar"]
