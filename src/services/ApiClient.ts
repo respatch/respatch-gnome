@@ -1,4 +1,5 @@
 import type { FetchFn } from '../libs/fetch.js';
+import type { TransportsResponse } from '../models/Transport.js';
 
 /**
  * Generic fetch-like signature accepted by ApiClient.
@@ -44,6 +45,31 @@ export class ApiClient {
             if (!response.ok) {
                 throw new Error(`Chyba ${response.status}`);
             }
+        } catch (error) {
+            if (error instanceof Error) {
+                throw error;
+            }
+            throw new Error(String(error));
+        }
+    }
+
+    async fetchTransports(url: string, token: string): Promise<TransportsResponse> {
+        const endpoint = url.replace(/\/+$/, '') + '/transport';
+
+        try {
+            const response = await this.fetchFn(endpoint, {
+                method: 'GET',
+                headers: {
+                    'X-Respatch-Token': token,
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`Chyba ${response.status}`);
+            }
+
+            return await response.json() as TransportsResponse;
         } catch (error) {
             if (error instanceof Error) {
                 throw error;

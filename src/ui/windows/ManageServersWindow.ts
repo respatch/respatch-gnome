@@ -10,6 +10,7 @@ import { Project } from '../../models/Project.js';
 export class ManageServersWindow {
     public window: Adw.PreferencesWindow;
     private serversGroup: Adw.PreferencesGroup;
+    private _rows: Gtk.Widget[] = [];
 
     constructor(
         private uiDir: string,
@@ -32,14 +33,10 @@ export class ManageServersWindow {
 
     private refreshList() {
         // Clear existing rows
-        let child = this.serversGroup.get_first_child();
-        while (child) {
-            const next = child.get_next_sibling();
-            if (!(child instanceof Gtk.Button)) { // Don't remove the header suffix button
-                this.serversGroup.remove(child);
-            }
-            child = next;
+        for (const row of this._rows) {
+            this.serversGroup.remove(row);
         }
+        this._rows = [];
 
         const projects = this.store.getProjects();
         if (projects.length === 0) {
@@ -50,8 +47,10 @@ export class ManageServersWindow {
             });
             emptyLabel.add_css_class('dim-label');
             this.serversGroup.add(emptyLabel);
+            this._rows.push(emptyLabel);
             return;
         }
+
 
         for (const project of projects) {
             const row = new Adw.ActionRow({
@@ -82,6 +81,7 @@ export class ManageServersWindow {
             row.add_suffix(removeBtn);
 
             this.serversGroup.add(row);
+            this._rows.push(row);
         }
     }
 

@@ -36,66 +36,54 @@ Adw.ApplicationWindow window {
                     }
 
                     content: Gtk.ScrolledWindow {
-                        Gtk.ListBox {
-                            styles ["navigation-sidebar"]
-                            selection-mode: single;
+                        Gtk.Box {
+                            orientation: vertical;
 
-                            Adw.ActionRow {
-                                title: _("Dashboard");
-                                [prefix] Gtk.Image { icon-name: "utilities-system-monitor-symbolic"; }
-                            }
-                            Adw.ActionRow {
-                                title: _("Zlyhané správy");
-                                subtitle: _("3 čakajú na zásah");
-                                [prefix] Gtk.Image { icon-name: "dialog-error-symbolic"; styles ["error"] }
-                            }
-                            Gtk.ListBoxRow {
+                            Gtk.ListBox {
                                 styles ["navigation-sidebar"]
+                                selection-mode: single;
+
+                                Adw.ActionRow {
+                                    title: _("Dashboard");
+                                    [prefix] Gtk.Image { icon-name: "utilities-system-monitor-symbolic"; }
+                                }
+                                Adw.ActionRow {
+                                    title: _("Zlyhané správy");
+                                    subtitle: _("3 čakajú na zásah");
+                                    [prefix] Gtk.Image { icon-name: "dialog-error-symbolic"; styles ["error"] }
+                                }
+                            }
+
+                            Gtk.Box {
+                                orientation: vertical;
+                                margin-start: 8;
+                                margin-end: 8;
+                                margin-top: 8;
+                                margin-bottom: 8;
 
                                 Gtk.Box {
-                                    orientation: vertical;
-                                    spacing: 4;
-                                    margin-start: 12;
-                                    margin-end: 12;
-                                    margin-top: 8;
-                                    margin-bottom: 8;
-
-                                    Gtk.Box {
-                                        orientation: horizontal;
-                                        spacing: 12;
-
-                                        Gtk.Image {
-                                            icon-name: "network-server-symbolic";
-                                            valign: center;
-                                        }
-
-                                        Gtk.Label {
-                                            label: "async2";
-                                            hexpand: true;
-                                            halign: start;
-                                            styles ["title"]
-                                        }
-
-                                    }
+                                    orientation: horizontal;
+                                    margin-start: 4;
+                                    margin-end: 4;
+                                    margin-bottom: 4;
 
                                     Gtk.Label {
-                                        label: _("5 workerov • 124 MB RAM");
+                                        label: _("Transporty");
+                                        hexpand: true;
                                         halign: start;
-                                        styles ["caption"]
+                                        styles ["heading"]
                                     }
 
-                                    Gtk.ProgressBar worker_load_bar2 {
-                                        fraction: 0.33;
-                                        margin-top: 4;
-                                        styles ["worker-progress"]
+                                    Gtk.Button transport_pause_button {
+                                        icon-name: "media-playback-pause-symbolic";
+                                        tooltip-text: _("Pozastaviť obnovovanie");
+                                        styles ["flat", "circular"]
                                     }
+                                }
 
-                                    Gtk.Label {
-                                        label: _("2 zaneprázdnení");
-                                        halign: end;
-                                        opacity: 0.7;
-                                        styles ["caption"]
-                                    }
+                                Gtk.ListBox transport_list {
+                                    styles ["navigation-sidebar"]
+                                    selection-mode: none;
                                 }
                             }
                         }
