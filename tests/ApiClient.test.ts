@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterEach, afterAll } from 'vitest';
 import { setupServer } from 'msw/node';
-import { handlers } from './mocks/handlers.js';
+import { handlers, recentMessagesFixture } from './mocks/handlers.js';
 import { ApiClient } from '../src/services/ApiClient.js';
 
 const server = setupServer(...handlers);
@@ -26,5 +26,25 @@ describe('ApiClient', () => {
 
     it('should handle URL with trailing slash', async () => {
         await expect(client.verifyProject('https://example.com/', 'valid-token')).resolves.not.toThrow();
+    });
+
+    describe('fetchRecentMessages', () => {
+        it('should fetch and parse recent messages with valid token', async () => {
+            const data = await client.fetchRecentMessages('https://example.com', 'valid-token');
+            expect(data).toEqual(recentMessagesFixture);
+            expect(data.length).toBe(2);
+            expect(data[0].id).toBe(429);
+            expect(data[1].status).toBeNull();
+        });
+
+        it('should throw on invalid token', async () => {
+            await expect(client.fetchRecentMessages('https://example.com', 'invalid-token'))
+                .rejects.toThrow('Chyba 401');
+        });
+
+        it('should handle URL with trailing slash', async () => {
+            await expect(client.fetchRecentMessages('https://example.com/', 'valid-token'))
+                .resolves.toEqual(recentMessagesFixture);
+        });
     });
 });

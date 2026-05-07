@@ -150,35 +150,18 @@ Adw.ApplicationWindow window {
 
                                 // --- BLOK 2: ÚSPEŠNÉ SPRÁVY ---
                                 Adw.PreferencesGroup {
-                                    title: _("Nedávno spracované (Posledných 15)");
+                                    title: _("Nedávno spracované");
 
-                                    Gtk.ListBox {
+                                    header-suffix: Gtk.Button recent_messages_pause_button {
+                                        icon-name: "media-playback-pause-symbolic";
+                                        tooltip-text: _("Pozastaviť obnovovanie");
+                                        valign: center;
+                                        styles ["flat", "circular"]
+                                    };
+
+                                    Gtk.ListBox recent_messages_list {
                                         styles ["boxed-list"]
                                         selection-mode: none;
-
-                                        Adw.ActionRow {
-                                            title: "SendEmailMessage";
-                                            subtitle: _("Ticket #16412024 • pred 14 sekundami");
-                                            [prefix] Gtk.Image { icon-name: "emblem-ok-symbolic"; }
-                                            [suffix] Gtk.Label { label: "68 ms"; styles ["dim-label"] }
-                                            [suffix] Gtk.Button { icon-name: "go-next-symbolic"; valign: center; styles ["flat"] }
-                                        }
-
-                                        Adw.ActionRow {
-                                            title: "AdminNotification";
-                                            subtitle: _("Záloha databázy dokončená • pred 21 sekundami");
-                                            [prefix] Gtk.Image { icon-name: "emblem-ok-symbolic"; }
-                                            [suffix] Gtk.Label { label: "2 ms"; styles ["dim-label"] }
-                                            [suffix] Gtk.Button { icon-name: "go-next-symbolic"; valign: center; styles ["flat"] }
-                                        }
-
-                                        Adw.ActionRow {
-                                            title: "SendEmailMessage";
-                                            subtitle: _("Partner produkt - technické šetrenie • pred minútou");
-                                            [prefix] Gtk.Image { icon-name: "emblem-ok-symbolic"; }
-                                            [suffix] Gtk.Label { label: "174 ms"; styles ["dim-label"] }
-                                            [suffix] Gtk.Button { icon-name: "go-next-symbolic"; valign: center; styles ["flat"] }
-                                        }
                                     }
                                 }
                             }

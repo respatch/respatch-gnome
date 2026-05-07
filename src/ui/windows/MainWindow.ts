@@ -1,34 +1,44 @@
 import Gtk from 'gi://Gtk?version=4.0';
 import Adw from 'gi://Adw?version=1';
-import GLib from 'gi://GLib';
 import { WindowManager } from '../../WindowManager.js';
 import { ProjectStore } from '../../stores/ProjectStore.js';
 import { ApiClient } from '../../services/ApiClient.js';
 import { LoggerService } from '../../services/LoggerService.js';
-import { TransportRow } from '../widgets/TransportRow.js';
+import type { Project } from '../../models/Project.js';
+import { TransportRow, TransportItem } from '../widgets/TransportRow.js';
+import { RecentMessageRow } from '../widgets/RecentMessageRow.js';
+import { PollingSection } from '../widgets/PollingSection.js';
 import type { TransportsResponse } from '../../models/Transport.js';
+import type { RecentMessage, RecentMessagesResponse } from '../../models/RecentMessage.js';
 
-const TRANSPORT_POLL_INTERVAL_SECONDS = 10;
+const POLL_INTERVAL_SECONDS = 10;
 
+/**
+ * Main application window. Acts as a thin orchestrator:
+ *   - wires header buttons to {@link WindowManager},
+ *   - keeps the server switcher in sync with {@link ProjectStore},
+ *   - owns the refreshable {@link PollingSection}s (one per panel) and
+ *     restarts them when the active project changes.
+ *
+ * All polling/diff/pause-button logic lives in {@link PollingSection};
+ * MainWindow itself contains no GLib timers or row-bookkeeping anymore.
+ */
 export class MainWindow {
-    private window: Adw.ApplicationWindow;
-    private serverSwitcher: Gtk.DropDown;
-    private stringList!: Gtk.StringList;
-    private projects: import('../../models/Project.js').Project[] = [];
+    private readonly window: Adw.ApplicationWindow;
+    private readonly serverSwitcher: Gtk.DropDown;
+    private readonly stringList: Gtk.StringList;
+    private projects: Project[] = [];
 
-    private transportList!: Gtk.ListBox;
-    private transportPauseButton!: Gtk.Button;
-    private transportRows: Map<string, TransportRow> = new Map();
-    private pollSourceId: number | null = null;
-    private isPaused: boolean = false;
+    private readonly transportSection: PollingSection<TransportItem, TransportsResponse>;
+    private readonly recentMessagesSection: PollingSection<RecentMessage, RecentMessagesResponse>;
 
     constructor(
         app: Adw.Application,
         uiDir: string,
         wm: WindowManager,
-        private store: ProjectStore,
-        private apiClient: ApiClient,
-        private logger: LoggerService
+        private readonly store: ProjectStore,
+        private readonly apiClient: ApiClient,
+        private readonly logger: LoggerService
     ) {
         const builder = new Gtk.Builder();
         builder.add_from_file(`${uiDir}/ui/main.ui`);
@@ -36,50 +46,57 @@ export class MainWindow {
         this.window = builder.get_object('window') as Adw.ApplicationWindow;
         this.window.set_application(app);
 
-        const settingsBtn = builder.get_object('settings_button') as Gtk.Button;
-        if (settingsBtn) {
-            settingsBtn.connect('clicked', () => wm.showSettings(this.window));
-        }
-
-        const manageServersBtn = builder.get_object('manage_servers_button') as Gtk.Button;
-        if (manageServersBtn) {
-            manageServersBtn.connect('clicked', () => wm.showManageServers(this.window));
-        }
+        this.wireHeaderButtons(builder, wm);
 
         this.serverSwitcher = builder.get_object('server_switcher') as Gtk.DropDown;
+        this.stringList = new Gtk.StringList();
         this.setupServerSwitcher();
 
-        this.transportList = builder.get_object('transport_list') as Gtk.ListBox;
-        this.transportPauseButton = builder.get_object('transport_pause_button') as Gtk.Button;
-        this.setupTransportPolling();
+        this.transportSection = this.createTransportSection(builder);
+        this.recentMessagesSection = this.createRecentMessagesSection(builder);
+
+        this.transportSection.start();
+        this.recentMessagesSection.start();
     }
 
-    private setupServerSwitcher() {
-        this.stringList = new Gtk.StringList();
+    present(): void {
+        this.window.present();
+    }
+
+    // ----- Header / navigation -------------------------------------------------
+
+    private wireHeaderButtons(builder: Gtk.Builder, wm: WindowManager): void {
+        const settingsBtn = builder.get_object('settings_button') as Gtk.Button | null;
+        settingsBtn?.connect('clicked', () => wm.showSettings(this.window));
+
+        const manageServersBtn = builder.get_object('manage_servers_button') as Gtk.Button | null;
+        manageServersBtn?.connect('clicked', () => wm.showManageServers(this.window));
+    }
+
+    // ----- Server switcher -----------------------------------------------------
+
+    private setupServerSwitcher(): void {
         this.serverSwitcher.set_model(this.stringList);
 
         this.store.connect('notify::active-project', () => {
             this.syncSwitcher();
-            this.restartTransportPolling();
+            this.transportSection.restart();
+            this.recentMessagesSection.restart();
         });
 
         this.serverSwitcher.connect('notify::selected-item', () => {
-            const selectedPosition = this.serverSwitcher.get_selected();
-            if (selectedPosition !== Gtk.INVALID_LIST_POSITION && this.projects[selectedPosition]) {
-                const selectedId = this.projects[selectedPosition].id;
-                this.store.setActiveProject(selectedId);
+            const pos = this.serverSwitcher.get_selected();
+            if (pos !== Gtk.INVALID_LIST_POSITION && this.projects[pos]) {
+                this.store.setActiveProject(this.projects[pos].id);
             }
         });
 
         this.syncSwitcher();
     }
 
-    private syncSwitcher() {
+    private syncSwitcher(): void {
         this.projects = this.store.getProjects();
         const names = this.projects.map(p => p.name);
-
-        // Gtk.StringList does not have clear/set_items, so we recreate it if needed
-        // But actually stringList.splice(0, stringList.get_n_items(), names) is better
         this.stringList.splice(0, this.stringList.get_n_items(), names);
 
         const activeId = this.store.active_project;
@@ -91,79 +108,57 @@ export class MainWindow {
         }
     }
 
-    private setupTransportPolling() {
-        this.transportPauseButton.connect('clicked', () => this.togglePause());
-        this.startTransportPolling();
-    }
+    // ----- Polling sections ----------------------------------------------------
 
-    private togglePause() {
-        this.isPaused = !this.isPaused;
-        if (this.isPaused) {
-            this.stopTransportPolling();
-            this.transportPauseButton.icon_name = 'media-playback-start-symbolic';
-            this.transportPauseButton.tooltip_text = 'Obnoviť obnovovanie';
-        } else {
-            this.transportPauseButton.icon_name = 'media-playback-pause-symbolic';
-            this.transportPauseButton.tooltip_text = 'Pozastaviť obnovovanie';
-            this.startTransportPolling();
-        }
-    }
-
-    private startTransportPolling() {
-        this.fetchAndUpdateTransports();
-        this.pollSourceId = GLib.timeout_add_seconds(
-            GLib.PRIORITY_DEFAULT,
-            TRANSPORT_POLL_INTERVAL_SECONDS,
-            () => {
-                this.fetchAndUpdateTransports();
-                return GLib.SOURCE_CONTINUE;
-            }
-        );
-    }
-
-    private stopTransportPolling() {
-        if (this.pollSourceId !== null) {
-            GLib.source_remove(this.pollSourceId);
-            this.pollSourceId = null;
-        }
-    }
-
-    private restartTransportPolling() {
-        if (!this.isPaused) {
-            this.stopTransportPolling();
-            this.startTransportPolling();
-        }
-    }
-
-    private fetchAndUpdateTransports() {
+    /** Returns the currently active project, or `null` if none is selected. */
+    private getActiveProject(): Project | null {
         const activeId = this.store.active_project;
-        if (!activeId) return;
-
-        const project = this.store.getProjects().find(p => p.id === activeId);
-        if (!project) return;
-
-        this.apiClient.fetchTransports(project.url, project.token)
-            .then((data: TransportsResponse) => this.updateTransportList(data))
-            .catch((err: unknown) => {
-                this.logger.warn(`Nepodarilo sa načítať transporty: ${err instanceof Error ? err.message : String(err)}`);
-            });
+        if (!activeId) return null;
+        return this.store.getProjects().find(p => p.id === activeId) ?? null;
     }
 
-    private updateTransportList(data: TransportsResponse) {
-        for (const [name, info] of Object.entries(data)) {
-            const existing = this.transportRows.get(name);
-            if (existing) {
-                existing.update(info);
-            } else {
-                const row = new TransportRow(name);
-                row.update(info);
-                this.transportRows.set(name, row);
-                this.transportList.append(row.getWidget());
-            }
-        }
+    private createTransportSection(builder: Gtk.Builder): PollingSection<TransportItem, TransportsResponse> {
+        const list = builder.get_object('transport_list') as Gtk.ListBox;
+        const pauseBtn = builder.get_object('transport_pause_button') as Gtk.Button;
+
+        return new PollingSection<TransportItem, TransportsResponse>({
+            name: 'Transports',
+            listBox: list,
+            pauseButton: pauseBtn,
+            intervalSeconds: POLL_INTERVAL_SECONDS,
+            logger: this.logger,
+            fetcher: () => {
+                const p = this.getActiveProject();
+                if (!p) return Promise.resolve({} as TransportsResponse);
+                return this.apiClient.fetchTransports(p.url, p.token);
+            },
+            toItems: (response) => Object.entries(response).map(([name, info]) => ({ name, info })),
+            keyOf: (item) => item.name,
+            createRow: (item) => new TransportRow(item.name),
+        });
     }
 
-    present() {
-        this.window.present();
+    private createRecentMessagesSection(builder: Gtk.Builder): PollingSection<RecentMessage, RecentMessagesResponse> {
+        const list = builder.get_object('recent_messages_list') as Gtk.ListBox;
+        const pauseBtn = builder.get_object('recent_messages_pause_button') as Gtk.Button;
+
+        return new PollingSection<RecentMessage, RecentMessagesResponse>({
+            name: 'RecentMessages',
+            listBox: list,
+            pauseButton: pauseBtn,
+            intervalSeconds: POLL_INTERVAL_SECONDS,
+            logger: this.logger,
+            fetcher: () => {
+                const p = this.getActiveProject();
+                if (!p) return Promise.resolve([] as RecentMessagesResponse);
+                return this.apiClient.fetchRecentMessages(p.url, p.token);
+            },
+            toItems: (response) => response,
+            keyOf: (msg) => String(msg.id),
+            createRow: () => new RecentMessageRow((transport) => {
+                // Future: open transport-detail window via WindowManager.
+                this.logger.info(`Klik na transport: ${transport}`);
+            }),
+        });
     }
 }

@@ -6,7 +6,8 @@ PRI GENEROVANÍ KÓDU STRIKTNE DODRŽUJ TIETO PRAVIDLÁ:
 
 # Role & Architecture Standards (MVVM Pattern)
 
-Si hlavný architekt Respatch aplikácie. Tvojou úlohou je udržiavať kód modulárny, testovateľný a v súlade s GNOME Human Interface Guidelines.
+Si hlavný architekt Respatch aplikácie. Tvojou úlohou je udržiavať kód modulárny, testovateľný a v súlade s GNOME Human Interface Guidelines. 
+Dávaš si záležať aby tvoj kód nebol špagetový a aby sa držal SOLID principov.
 
 ## Dôležité pravidlá pre Agenta
 - **GObject registrácia**: Triedy dediace od GObjectu (napr. `Application`, `ProjectStore`) MUSIA byť registrované cez `GObject.registerClass`.

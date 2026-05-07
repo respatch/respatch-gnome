@@ -1,8 +1,14 @@
 import Gtk from 'gi://Gtk?version=4.0';
-import { _ } from '../../gettext.js';
 import type { TransportInfo } from '../../models/Transport.js';
+import type { RowController } from './PollingSection.js';
 
-export class TransportRow {
+/** A single transport entry, identified by its `name`. */
+export interface TransportItem {
+    name: string;
+    info: TransportInfo;
+}
+
+export class TransportRow implements RowController<TransportItem> {
     private row: Gtk.ListBoxRow;
     private nameLabel: Gtk.Label;
     private subtitleLabel: Gtk.Label;
@@ -53,13 +59,13 @@ export class TransportRow {
         this.row.set_child(box);
     }
 
-    update(info: TransportInfo): void {
+    update(item: TransportItem): void {
+        const info = item.info;
         const count = info.count !== null ? String(info.count) : '–';
         this.subtitleLabel.label = `${count} správ • ${info.workers} workerov • ${info.memory}`;
 
         const fraction = info.workers > 0 ? info.usedWorkers / info.workers : 0;
         this.progressBar.fraction = Math.min(1, Math.max(0, fraction));
-
     }
 
     getWidget(): Gtk.ListBoxRow {

@@ -1,5 +1,6 @@
 import type { FetchFn } from '../libs/fetch.js';
 import type { TransportsResponse } from '../models/Transport.js';
+import type { RecentMessagesResponse } from '../models/RecentMessage.js';
 
 /**
  * Generic fetch-like signature accepted by ApiClient.
@@ -25,13 +26,13 @@ export class ApiClient {
     }
 
     /**
-     * Verifies project by calling /status endpoint
+     * Performs an authenticated GET request to a project endpoint and returns the parsed JSON response.
      * @param url Project base URL
-     * @param token API Token
-     * @throws Error if verification fails
+     * @param token API token
+     * @param path Endpoint path (must start with `/`)
      */
-    async verifyProject(url: string, token: string): Promise<void> {
-        const endpoint = url.replace(/\/+$/, '') + '/status';
+    private async getJson<T>(url: string, token: string, path: string): Promise<T> {
+        const endpoint = url.replace(/\/+$/, '') + path;
 
         try {
             const response = await this.fetchFn(endpoint, {
@@ -45,6 +46,8 @@ export class ApiClient {
             if (!response.ok) {
                 throw new Error(`Chyba ${response.status}`);
             }
+
+            return await response.json() as T;
         } catch (error) {
             if (error instanceof Error) {
                 throw error;
@@ -53,28 +56,21 @@ export class ApiClient {
         }
     }
 
+    /**
+     * Verifies project by calling /status endpoint
+     * @param url Project base URL
+     * @param token API Token
+     * @throws Error if verification fails
+     */
+    async verifyProject(url: string, token: string): Promise<void> {
+        await this.getJson<unknown>(url, token, '/status');
+    }
+
     async fetchTransports(url: string, token: string): Promise<TransportsResponse> {
-        const endpoint = url.replace(/\/+$/, '') + '/transport';
+        return this.getJson<TransportsResponse>(url, token, '/transport');
+    }
 
-        try {
-            const response = await this.fetchFn(endpoint, {
-                method: 'GET',
-                headers: {
-                    'X-Respatch-Token': token,
-                    'Accept': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`Chyba ${response.status}`);
-            }
-
-            return await response.json() as TransportsResponse;
-        } catch (error) {
-            if (error instanceof Error) {
-                throw error;
-            }
-            throw new Error(String(error));
-        }
+    async fetchRecentMessages(url: string, token: string): Promise<RecentMessagesResponse> {
+        return this.getJson<RecentMessagesResponse>(url, token, '/recent-messages');
     }
 }
