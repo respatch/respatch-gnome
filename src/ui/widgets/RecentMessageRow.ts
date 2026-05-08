@@ -3,6 +3,7 @@ import Adw from 'gi://Adw?version=1';
 import { _ } from '../../gettext.js';
 import type { RecentMessage } from '../../models/RecentMessage.js';
 import type { RowController } from './PollingSection.js';
+import { formatDuration } from '../../utils/format.js';
 
 /**
  * Callback fired when the user clicks the transport pill of a row.
@@ -70,28 +71,16 @@ export class RecentMessageRow implements RowController<RecentMessage> {
             this.icon.remove_css_class('error');
         }
 
-        this.row.title = `#${item.id}`;
+        this.row.title = `#${item.title}`;
         this.row.subtitle = `${item.status ?? _('OK')}\n${this.formatHandledAt(item.handledAt)}`;
 
         this.transportButton.label = item.transport;
-        this.durationLabel.label = this.formatDuration(item.duration);
+        this.durationLabel.label = formatDuration(item.duration);
         this.memoryLabel.label = item.memory;
     }
 
     getWidget(): Gtk.ListBoxRow {
         return this.row;
-    }
-
-    private formatDuration(durationMicros: number): string {
-        // API returns duration in microseconds (per current backend behaviour).
-        if (durationMicros < 1000) {
-            return `${durationMicros} µs`;
-        }
-        const ms = durationMicros / 1000;
-        if (ms < 1000) {
-            return `${ms.toFixed(ms < 10 ? 1 : 0)} ms`;
-        }
-        return `${(ms / 1000).toFixed(2)} s`;
     }
 
     private formatHandledAt(iso: string): string {
