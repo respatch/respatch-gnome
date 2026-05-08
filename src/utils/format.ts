@@ -6,7 +6,7 @@
  */
 export function formatDuration(durationMs: number): string {
     if (durationMs < 1000) {
-        return `${durationMs.toFixed(durationMs < 10 ? 1 : 0)} ms`;
+        return `${durationMs.toFixed(durationMs < 10 ? 1 : 0)}ms`;
     }
-    return `${(durationMs / 1000).toFixed(2)} s`;
+    return `${(durationMs / 1000).toFixed(1)}s`;
 }

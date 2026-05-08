@@ -48,11 +48,13 @@ export class RecentMessageRow implements RowController<RecentMessage> {
     update(item: RecentMessage): void {
         const failed = item.status !== null;
 
-        this.icon.icon_name = failed ? 'dialog-error-symbolic' : 'emblem-ok-symbolic';
+        this.icon.icon_name = failed ? 'dialog-error-symbolic' : 'radio-checked-symbolic';
         if (failed) {
             this.icon.add_css_class('error');
+            this.icon.remove_css_class('success');
         } else {
             this.icon.remove_css_class('error');
+            this.icon.add_css_class('success');
         }
 
         this.row.title = `#${item.title}`;
