@@ -7,9 +7,11 @@ import { LoggerService } from '../../services/LoggerService.js';
 import type { Project } from '../../models/Project.js';
 import { TransportRow, TransportItem } from '../widgets/TransportRow.js';
 import { RecentMessageRow } from '../widgets/RecentMessageRow.js';
+import { FailedMessageRow } from '../widgets/FailedMessageRow.js';
 import { PollingSection } from '../widgets/PollingSection.js';
 import type { TransportsResponse } from '../../models/Transport.js';
 import type { RecentMessage, RecentMessagesResponse } from '../../models/RecentMessage.js';
+import type { FailedMessage, FailedMessagesResponse } from '../../models/FailedMessage.js';
 
 const POLL_INTERVAL_SECONDS = 10;
 
@@ -31,6 +33,7 @@ export class MainWindow {
 
     private readonly transportSection: PollingSection<TransportItem, TransportsResponse>;
     private readonly recentMessagesSection: PollingSection<RecentMessage, RecentMessagesResponse>;
+    private readonly failedMessagesSection: PollingSection<FailedMessage, FailedMessagesResponse>;
 
     constructor(
         app: Adw.Application,
@@ -54,9 +57,11 @@ export class MainWindow {
 
         this.transportSection = this.createTransportSection(builder, uiDir);
         this.recentMessagesSection = this.createRecentMessagesSection(builder, uiDir);
+        this.failedMessagesSection = this.createFailedMessagesSection(builder, uiDir);
 
         this.transportSection.start();
         this.recentMessagesSection.start();
+        this.failedMessagesSection.start();
     }
 
     present(): void {
@@ -82,6 +87,7 @@ export class MainWindow {
             this.syncSwitcher();
             this.transportSection.restart();
             this.recentMessagesSection.restart();
+            this.failedMessagesSection.restart();
         });
 
         this.serverSwitcher.connect('notify::selected-item', () => {
@@ -158,6 +164,28 @@ export class MainWindow {
             createRow: () => new RecentMessageRow(uiDir, (transport) => {
                 // Future: open transport-detail window via WindowManager.
                 this.logger.info(`Klik na transport: ${transport}`);
+            }),
+        });
+    }
+
+    private createFailedMessagesSection(builder: Gtk.Builder, uiDir: string): PollingSection<FailedMessage, FailedMessagesResponse> {
+        const list = builder.get_object('failed_messages_list') as Gtk.ListBox;
+
+        return new PollingSection<FailedMessage, FailedMessagesResponse>({
+            name: 'FailedMessages',
+            listBox: list,
+            intervalSeconds: POLL_INTERVAL_SECONDS,
+            logger: this.logger,
+            fetcher: () => {
+                const p = this.getActiveProject();
+                if (!p) return Promise.resolve([] as FailedMessagesResponse);
+                return this.apiClient.fetchFailedMessages(p.url, p.token);
+            },
+            toItems: (response) => response,
+            keyOf: (msg) => String(msg.id),
+            createRow: () => new FailedMessageRow(uiDir, (id, action) => {
+                this.logger.info(`Klik na zlyhanú správu #${id}: ${action}`);
+                // TODO: volanie API na retry/delete
             }),
         });
     }

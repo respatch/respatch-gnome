@@ -47,4 +47,17 @@ describe('ApiClient', () => {
                 .resolves.toEqual(recentMessagesFixture);
         });
     });
+    describe('fetchFailedMessages', () => {
+        it('should fetch and parse failed messages with valid token', async () => {
+            const data = await client.fetchFailedMessages('https://example.com', 'valid-token');
+            expect(data.length).toBe(2);
+            expect(data[0].id).toBe(3);
+            expect(data[1].exception).toBeNull();
+        });
+
+        it('should throw on invalid token', async () => {
+            await expect(client.fetchFailedMessages('https://example.com', 'invalid-token'))
+                .rejects.toThrow('Chyba 401');
+        });
+    });
 });

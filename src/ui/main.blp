@@ -122,29 +122,9 @@ Adw.ApplicationWindow window {
                                 Adw.PreferencesGroup {
                                     title: _("Zlyhané (Vyžadujú pozornosť)");
 
-                                    Gtk.ListBox {
+                                    Gtk.ListBox failed_messages_list {
                                         styles ["boxed-list"]
                                         selection-mode: none;
-
-                                        Adw.ActionRow {
-                                            title: "App\\Message\\ProcessVideo";
-                                            subtitle: _("FFmpeg process crashed unexpectedly • pred 2 minútami");
-                                            title-lines: 1;
-                                            subtitle-lines: 1;
-
-                                            [prefix]
-                                            Gtk.Image { icon-name: "dialog-error-symbolic"; styles ["error"] }
-
-                                            [suffix]
-                                            Gtk.Label { label: "125 ms"; styles ["dim-label"] }
-
-                                            [suffix]
-                                            Gtk.Button {
-                                                label: _("Retry");
-                                                valign: center;
-                                                styles ["pill", "suggested-action"]
-                                            }
-                                        }
                                     }
                                 }
 

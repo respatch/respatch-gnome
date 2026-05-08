@@ -1,6 +1,7 @@
 import type { FetchFn } from '../libs/fetch.js';
 import type { TransportsResponse } from '../models/Transport.js';
 import type { RecentMessagesResponse } from '../models/RecentMessage.js';
+import type { FailedMessagesResponse } from '../models/FailedMessage.js';
 
 /**
  * Generic fetch-like signature accepted by ApiClient.
@@ -72,5 +73,9 @@ export class ApiClient {
 
     async fetchRecentMessages(url: string, token: string): Promise<RecentMessagesResponse> {
         return this.getJson<RecentMessagesResponse>(url, token, '/recent-messages');
+    }
+
+    async fetchFailedMessages(url: string, token: string): Promise<FailedMessagesResponse> {
+        return this.getJson<FailedMessagesResponse>(url, token, '/transport/async?limit=5');
     }
 }

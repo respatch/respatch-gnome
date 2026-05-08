@@ -1,0 +1,28 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.ActionRow row {
+    title-lines: 1;
+    subtitle-lines: 2;
+
+    [prefix]
+    Gtk.Image icon {
+        icon-name: "dialog-error-symbolic";
+    }
+
+    [suffix]
+    Gtk.Button retry_button {
+        icon-name: "view-refresh-symbolic";
+        tooltip-text: _("Opakovať");
+        valign: center;
+        styles ["flat", "circular"]
+    }
+
+    [suffix]
+    Gtk.Button delete_button {
+        icon-name: "user-trash-symbolic";
+        tooltip-text: _("Vymazať");
+        valign: center;
+        styles ["flat", "circular", "error"]
+    }
+}
