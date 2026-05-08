@@ -1,0 +1,40 @@
+using Gtk 4.0;
+
+Gtk.ListBoxRow row {
+    styles ["navigation-sidebar"]
+
+    Gtk.Box {
+        orientation: vertical;
+        spacing: 4;
+        margin-start: 12;
+        margin-end: 12;
+        margin-top: 8;
+        margin-bottom: 8;
+
+        Gtk.Box {
+            orientation: horizontal;
+            spacing: 12;
+
+            Gtk.Image {
+                icon-name: "network-server-symbolic";
+                valign: center;
+            }
+
+            Gtk.Label name_label {
+                hexpand: true;
+                halign: start;
+                styles ["title"]
+            }
+        }
+
+        Gtk.Label subtitle_label {
+            halign: start;
+            styles ["caption"]
+        }
+
+        Gtk.ProgressBar progress_bar {
+            margin-top: 4;
+            styles ["worker-progress"]
+        }
+    }
+}

@@ -27,38 +27,22 @@ export class RecentMessageRow implements RowController<RecentMessage> {
     private readonly durationLabel: Gtk.Label;
     private readonly memoryLabel: Gtk.Label;
 
-    constructor(private readonly onTransportClick?: TransportClickHandler) {
-        this.row = new Adw.ActionRow({
-            title_lines: 1,
-            subtitle_lines: 2,
-        });
+    constructor(private readonly uiDir: string, private readonly onTransportClick?: TransportClickHandler) {
+        const builder = new Gtk.Builder();
+        builder.add_from_file(`${uiDir}/ui/recent_message_row.ui`);
 
-        this.icon = new Gtk.Image({ icon_name: 'emblem-ok-symbolic' });
-        this.row.add_prefix(this.icon);
+        this.row = builder.get_object('row') as Adw.ActionRow;
+        this.icon = builder.get_object('icon') as Gtk.Image;
+        this.transportButton = builder.get_object('transport_button') as Gtk.Button;
+        this.durationLabel = builder.get_object('duration_label') as Gtk.Label;
+        this.memoryLabel = builder.get_object('memory_label') as Gtk.Label;
 
-        this.transportButton = new Gtk.Button({
-            valign: Gtk.Align.CENTER,
-            tooltip_text: _('Zobraziť detail transportu'),
-        });
-        this.transportButton.add_css_class('pill');
-        this.transportButton.add_css_class('flat');
         this.transportButton.connect('clicked', () => {
             const t = this.transportButton.label;
             if (t && this.onTransportClick) {
                 this.onTransportClick(t);
             }
         });
-
-        this.durationLabel = new Gtk.Label({ valign: Gtk.Align.CENTER });
-        this.durationLabel.add_css_class('dim-label');
-
-        this.memoryLabel = new Gtk.Label({ valign: Gtk.Align.CENTER });
-        this.memoryLabel.add_css_class('dim-label');
-        this.memoryLabel.add_css_class('caption');
-
-        this.row.add_suffix(this.transportButton);
-        this.row.add_suffix(this.durationLabel);
-        this.row.add_suffix(this.memoryLabel);
     }
 
     update(item: RecentMessage): void {

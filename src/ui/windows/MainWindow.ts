@@ -52,8 +52,8 @@ export class MainWindow {
         this.stringList = new Gtk.StringList();
         this.setupServerSwitcher();
 
-        this.transportSection = this.createTransportSection(builder);
-        this.recentMessagesSection = this.createRecentMessagesSection(builder);
+        this.transportSection = this.createTransportSection(builder, uiDir);
+        this.recentMessagesSection = this.createRecentMessagesSection(builder, uiDir);
 
         this.transportSection.start();
         this.recentMessagesSection.start();
@@ -117,7 +117,7 @@ export class MainWindow {
         return this.store.getProjects().find(p => p.id === activeId) ?? null;
     }
 
-    private createTransportSection(builder: Gtk.Builder): PollingSection<TransportItem, TransportsResponse> {
+    private createTransportSection(builder: Gtk.Builder, uiDir: string): PollingSection<TransportItem, TransportsResponse> {
         const list = builder.get_object('transport_list') as Gtk.ListBox;
         const pauseBtn = builder.get_object('transport_pause_button') as Gtk.Button;
 
@@ -134,11 +134,11 @@ export class MainWindow {
             },
             toItems: (response) => Object.entries(response).map(([name, info]) => ({ name, info })),
             keyOf: (item) => item.name,
-            createRow: (item) => new TransportRow(item.name),
+            createRow: (item) => new TransportRow(item.name, uiDir),
         });
     }
 
-    private createRecentMessagesSection(builder: Gtk.Builder): PollingSection<RecentMessage, RecentMessagesResponse> {
+    private createRecentMessagesSection(builder: Gtk.Builder, uiDir: string): PollingSection<RecentMessage, RecentMessagesResponse> {
         const list = builder.get_object('recent_messages_list') as Gtk.ListBox;
         const pauseBtn = builder.get_object('recent_messages_pause_button') as Gtk.Button;
 
@@ -155,7 +155,7 @@ export class MainWindow {
             },
             toItems: (response) => response,
             keyOf: (msg) => String(msg.id),
-            createRow: () => new RecentMessageRow((transport) => {
+            createRow: () => new RecentMessageRow(uiDir, (transport) => {
                 // Future: open transport-detail window via WindowManager.
                 this.logger.info(`Klik na transport: ${transport}`);
             }),

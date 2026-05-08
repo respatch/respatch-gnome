@@ -1,0 +1,31 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.ActionRow row {
+    title-lines: 1;
+    subtitle-lines: 2;
+
+    [prefix]
+    Gtk.Image icon {
+        icon-name: "emblem-ok-symbolic";
+    }
+
+    [suffix]
+    Gtk.Button transport_button {
+        valign: center;
+        tooltip-text: _("Zobraziť detail transportu");
+        styles ["pill", "flat"]
+    }
+
+    [suffix]
+    Gtk.Label duration_label {
+        valign: center;
+        styles ["dim-label"]
+    }
+
+    [suffix]
+    Gtk.Label memory_label {
+        valign: center;
+        styles ["dim-label", "caption"]
+    }
+}

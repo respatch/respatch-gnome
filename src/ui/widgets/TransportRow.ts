@@ -14,49 +14,16 @@ export class TransportRow implements RowController<TransportItem> {
     private subtitleLabel: Gtk.Label;
     private progressBar: Gtk.ProgressBar;
 
-    constructor(public readonly transportName: string) {
-        this.nameLabel = new Gtk.Label({
-            label: transportName,
-            hexpand: true,
-            halign: Gtk.Align.START,
-        });
-        this.nameLabel.add_css_class('title');
+    constructor(public readonly transportName: string, private readonly uiDir: string) {
+        const builder = new Gtk.Builder();
+        builder.add_from_file(`${uiDir}/ui/transport_row.ui`);
 
-        const icon = new Gtk.Image({ icon_name: 'network-server-symbolic' });
-        icon.valign = Gtk.Align.CENTER;
+        this.row = builder.get_object('row') as Gtk.ListBoxRow;
+        this.nameLabel = builder.get_object('name_label') as Gtk.Label;
+        this.subtitleLabel = builder.get_object('subtitle_label') as Gtk.Label;
+        this.progressBar = builder.get_object('progress_bar') as Gtk.ProgressBar;
 
-        const headerBox = new Gtk.Box({
-            orientation: Gtk.Orientation.HORIZONTAL,
-            spacing: 12,
-        });
-        headerBox.append(icon);
-        headerBox.append(this.nameLabel);
-
-        this.subtitleLabel = new Gtk.Label({
-            label: '',
-            halign: Gtk.Align.START,
-        });
-        this.subtitleLabel.add_css_class('caption');
-
-        this.progressBar = new Gtk.ProgressBar();
-        this.progressBar.margin_top = 4;
-        this.progressBar.add_css_class('worker-progress');
-
-        const box = new Gtk.Box({
-            orientation: Gtk.Orientation.VERTICAL,
-            spacing: 4,
-        });
-        box.margin_start = 12;
-        box.margin_end = 12;
-        box.margin_top = 8;
-        box.margin_bottom = 8;
-        box.append(headerBox);
-        box.append(this.subtitleLabel);
-        box.append(this.progressBar);
-
-        this.row = new Gtk.ListBoxRow();
-        this.row.add_css_class('navigation-sidebar');
-        this.row.set_child(box);
+        this.nameLabel.label = transportName;
     }
 
     update(item: TransportItem): void {
