@@ -29,6 +29,7 @@ export class MainWindow {
     private readonly window: Adw.ApplicationWindow;
     private readonly serverSwitcher: Gtk.DropDown;
     private readonly stringList: Gtk.StringList;
+    private readonly toastOverlay: Adw.ToastOverlay;
     private projects: Project[] = [];
 
     private readonly transportSection: PollingSection<TransportItem, TransportsResponse>;
@@ -52,6 +53,7 @@ export class MainWindow {
         this.wireHeaderButtons(builder, wm);
 
         this.serverSwitcher = builder.get_object('server_switcher') as Gtk.DropDown;
+        this.toastOverlay = builder.get_object('toast_overlay') as Adw.ToastOverlay;
         this.stringList = new Gtk.StringList();
         this.setupServerSwitcher();
 
@@ -131,6 +133,7 @@ export class MainWindow {
             name: 'Transports',
             listBox: list,
             pauseButton: pauseBtn,
+            toastOverlay: this.toastOverlay,
             intervalSeconds: POLL_INTERVAL_SECONDS,
             logger: this.logger,
             fetcher: () => {
@@ -152,6 +155,7 @@ export class MainWindow {
             name: 'RecentMessages',
             listBox: list,
             pauseButton: pauseBtn,
+            toastOverlay: this.toastOverlay,
             intervalSeconds: POLL_INTERVAL_SECONDS,
             logger: this.logger,
             fetcher: () => {
@@ -174,6 +178,7 @@ export class MainWindow {
         return new PollingSection<FailedMessage, FailedMessagesResponse>({
             name: 'FailedMessages',
             listBox: list,
+            toastOverlay: this.toastOverlay,
             intervalSeconds: POLL_INTERVAL_SECONDS,
             logger: this.logger,
             fetcher: () => {

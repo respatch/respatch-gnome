@@ -1,4 +1,5 @@
 import Gtk from 'gi://Gtk?version=4.0';
+import Adw from 'gi://Adw?version=1';
 import GLib from 'gi://GLib';
 import { _ } from '../../gettext.js';
 import type { LoggerService } from '../../services/LoggerService.js';
@@ -30,6 +31,8 @@ export interface PollingSectionConfig<TItem, TResponse> {
     listBox: Gtk.ListBox;
     /** Optional pause/resume button. If omitted, polling cannot be paused from the UI. */
     pauseButton?: Gtk.Button;
+    /** Optional ToastOverlay for showing error toasts. */
+    toastOverlay?: Adw.ToastOverlay;
     /** Polling interval in seconds. */
     intervalSeconds: number;
     /** Logger used for warnings on failed fetches. */
@@ -56,6 +59,10 @@ export class PollingSection<TItem, TResponse> {
     private readonly rows = new Map<string, RowController<TItem>>();
     private pollSourceId: number | null = null;
     private paused = false;
+
+    private isConnected: boolean = true;
+    private hasShownErrorToast: boolean = false;
+    private placeholderRow: Gtk.Widget | null = null;
 
     constructor(private readonly config: PollingSectionConfig<TItem, TResponse>) {
         if (this.config.pauseButton) {
@@ -115,10 +122,44 @@ export class PollingSection<TItem, TResponse> {
     private async fetchAndRender(): Promise<void> {
         try {
             const response = await this.config.fetcher();
+            
+            if (!this.isConnected) {
+                this.isConnected = true;
+                this.hasShownErrorToast = false;
+                
+                if (this.placeholderRow) {
+                    this.config.listBox.remove(this.placeholderRow);
+                    this.placeholderRow = null;
+                }
+            }
+            
             this.render(response);
         } catch (err) {
             const msg = err instanceof Error ? err.message : String(err);
             this.config.logger.warn(`[${this.config.name}] Nepodarilo sa načítať dáta: ${msg}`);
+            
+            this.isConnected = false;
+            
+            if (this.rows.size === 0) {
+                if (!this.placeholderRow) {
+                    const statusPage = new Adw.StatusPage({
+                        title: _('Nepodarilo sa načítať dáta'),
+                        description: _('Server je momentálne nedostupný.'),
+                        icon_name: 'network-offline-symbolic',
+                    });
+                    this.placeholderRow = statusPage;
+                    this.config.listBox.append(this.placeholderRow);
+                }
+            } else {
+                if (!this.hasShownErrorToast && this.config.toastOverlay) {
+                    const toast = new Adw.Toast({
+                        title: _('Nepodarilo sa načítať dáta. Server je nedostupný.'),
+                        timeout: 5,
+                    });
+                    this.config.toastOverlay.add_toast(toast);
+                    this.hasShownErrorToast = true;
+                }
+            }
         }
     }
 
@@ -154,5 +195,12 @@ export class PollingSection<TItem, TResponse> {
             this.config.listBox.remove(row.getWidget());
         }
         this.rows.clear();
+
+        if (this.placeholderRow) {
+            this.config.listBox.remove(this.placeholderRow);
+            this.placeholderRow = null;
+        }
+        this.isConnected = true;
+        this.hasShownErrorToast = false;
     }
 }
