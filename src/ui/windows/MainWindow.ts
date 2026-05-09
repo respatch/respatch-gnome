@@ -111,6 +111,9 @@ export class MainWindow {
 
         const manageServersBtn = builder.get_object('manage_servers_button') as Gtk.Button | null;
         manageServersBtn?.connect('clicked', () => wm.showManageServers(this.window));
+
+        const aboutBtn = builder.get_object('about_button') as Gtk.Button | null;
+        aboutBtn?.connect('clicked', () => wm.showAbout(this.window));
     }
 
     private wireDashboardRow(builder: Gtk.Builder): void {

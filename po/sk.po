@@ -206,3 +206,10 @@ msgid_plural "%d messages waiting for intervention"
 msgstr[0] "%d správa čaká na zásah"
 msgstr[1] "%d správy čakajú na zásah"
 msgstr[2] "%d správ čaká na zásah"
+
+
+msgid "About"
+msgstr "O aplikácii"
+
+msgid "Programmed with love.\n\nThe entire application was coded via Junie under my detailed and expert supervision.\nI will be glad for new issues and feature requests on github.\nPlease leave a like on our repository!"
+msgstr "Naprogramované s láskou.\n\nCelá aplikácia bola nakódená cez Junie pod mojim podrobným a odborným dohľadom.\nBudem rád za nové issue a feature requesty na githube.\nProsím dajte nám like na náš repozitár!"

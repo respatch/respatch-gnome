@@ -1,5 +1,6 @@
 import Adw from 'gi://Adw?version=1';
 import Gtk from 'gi://Gtk?version=4.0';
+import { _ } from './gettext.js';
 import { WelcomeWindow } from './ui/windows/WelcomeWindow.js';
 import { MainWindow } from './ui/windows/MainWindow.js';
 import { SettingsWindow } from './ui/windows/SettingsWindow.js';
@@ -67,5 +68,20 @@ export class WindowManager {
         );
         manageServers.window.set_transient_for(parent);
         manageServers.present();
+    }
+    showAbout(parent: Gtk.Window) {
+        this.logger.debug('Opening About window');
+        const about = new Adw.AboutWindow({
+            default_width: 450,
+            default_height: 400,
+            application_name: 'Respatch',
+            developer_name: 'Jozef Môstka',
+            website: 'https://github.com/respatch/respatch-gnome',
+            issue_url: 'https://github.com/respatch/respatch-gnome/issues',
+            comments: _('Programmed with love.\n\nThe entire application was coded via Junie under my detailed and expert supervision.\nI will be glad for new issues and feature requests on github.\nPlease leave a like on our repository!')
+        });
+        about.add_link('Jozef Môstka (GitHub)', 'https://github.com/tito10047/');
+        about.set_transient_for(parent);
+        about.present();
     }
 }

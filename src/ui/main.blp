@@ -33,6 +33,11 @@ Adw.ApplicationWindow window {
                             icon-name: "emblem-system-symbolic";
                             tooltip-text: _("Settings");
                         }
+                        [end]
+                        Gtk.Button about_button {
+                            icon-name: "help-about-symbolic";
+                            tooltip-text: _("About");
+                        }
                     }
 
                     content: Gtk.ScrolledWindow {
