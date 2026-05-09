@@ -1,0 +1,12 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.ActionRow failed_transport_row {
+    activatable: true;
+
+    [prefix]
+    Gtk.Image {
+        icon-name: "dialog-warning-symbolic";
+        styles ["warning"]
+    }
+}
