@@ -119,12 +119,16 @@ Adw.ApplicationWindow window {
                                 spacing: 32;
 
                                 // --- BLOK 1: ZLYHANÉ SPRÁVY ---
-                                Adw.PreferencesGroup {
-                                    title: _("Zlyhané (Vyžadujú pozornosť)");
+                                Gtk.Box failed_messages_box {
+                                    orientation: vertical;
 
-                                    Gtk.ListBox failed_messages_list {
-                                        styles ["boxed-list"]
-                                        selection-mode: none;
+                                    Adw.PreferencesGroup {
+                                        title: _("Zlyhané (Vyžadujú pozornosť)");
+
+                                        Gtk.ListBox failed_messages_list {
+                                            styles ["boxed-list"]
+                                            selection-mode: none;
+                                        }
                                     }
                                 }
 

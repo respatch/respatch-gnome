@@ -1,5 +1,6 @@
 import Gtk from 'gi://Gtk?version=4.0';
 import Adw from 'gi://Adw?version=1';
+import { _ } from '../../gettext.js';
 import { WindowManager } from '../../WindowManager.js';
 import { ProjectStore } from '../../stores/ProjectStore.js';
 import { ApiClient } from '../../services/ApiClient.js';
@@ -133,6 +134,8 @@ export class MainWindow {
         return new PollingSection<TransportItem, TransportsResponse>({
             name: 'Transports',
             listBox: list,
+            hideWhenEmpty: false,
+            emptyPlaceholder: _('Žiadne transporty'),
             pauseButton: pauseBtn,
             toastOverlay: this.toastOverlay,
             intervalSeconds: POLL_INTERVAL_SECONDS,
@@ -158,6 +161,8 @@ export class MainWindow {
         return new PollingSection<RecentMessage, RecentMessagesResponse>({
             name: 'RecentMessages',
             listBox: list,
+            hideWhenEmpty: false,
+            emptyPlaceholder: _('Žiadne správy'),
             pauseButton: pauseBtn,
             toastOverlay: this.toastOverlay,
             intervalSeconds: POLL_INTERVAL_SECONDS,
@@ -178,6 +183,7 @@ export class MainWindow {
 
     private createFailedMessagesSection(builder: Gtk.Builder, uiDir: string): PollingSection<FailedMessage, FailedMessagesResponse> {
         const list = builder.get_object('failed_messages_list') as Gtk.ListBox;
+        const container = builder.get_object('failed_messages_box') as Gtk.Widget;
 
         const actionHandler = new MessageActionHandler({
             apiClient: this.apiClient,
@@ -190,6 +196,8 @@ export class MainWindow {
         return new PollingSection<FailedMessage, FailedMessagesResponse>({
             name: 'FailedMessages',
             listBox: list,
+            hideWhenEmpty: true,
+            containerWidget: container,
             toastOverlay: this.toastOverlay,
             intervalSeconds: POLL_INTERVAL_SECONDS,
             logger: this.logger,

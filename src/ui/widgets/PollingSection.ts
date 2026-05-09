@@ -29,6 +29,26 @@ export interface PollingSectionConfig<TItem, TResponse> {
     name: string;
     /** ListBox that hosts the rows. */
     listBox: Gtk.ListBox;
+    /**
+     * When `true` the entire `containerWidget` is hidden whenever the section
+     * has no rows and shown again once rows appear.  Polling continues in the
+     * background regardless.
+     *
+     * When `false` (default) an empty-state placeholder label is shown inside
+     * the listBox instead.  The placeholder text is taken from `emptyPlaceholder`.
+     */
+    hideWhenEmpty?: boolean;
+    /**
+     * Text shown as a placeholder row when `hideWhenEmpty` is `false` and the
+     * section contains no data rows.  Required when `hideWhenEmpty` is `false`.
+     */
+    emptyPlaceholder?: string;
+    /**
+     * The widget that wraps the whole section (e.g. a `Gtk.Box` containing the
+     * `Adw.PreferencesGroup`).  Used only when `hideWhenEmpty` is `true` — the
+     * widget is hidden/shown based on whether rows are present.
+     */
+    containerWidget?: Gtk.Widget;
     /** Optional pause/resume button. If omitted, polling cannot be paused from the UI. */
     pauseButton?: Gtk.Button;
     /** Optional ToastOverlay for showing error toasts. */
@@ -63,10 +83,16 @@ export class PollingSection<TItem, TResponse> {
     private isConnected: boolean = true;
     private hasShownErrorToast: boolean = false;
     private placeholderRow: Gtk.Widget | null = null;
+    private emptyPlaceholderRow: Gtk.ListBoxRow | null = null;
 
     constructor(private readonly config: PollingSectionConfig<TItem, TResponse>) {
         if (this.config.pauseButton) {
             this.config.pauseButton.connect('clicked', () => this.togglePause());
+        }
+
+        // Initial visibility state
+        if (this.config.hideWhenEmpty && this.config.containerWidget) {
+            this.config.containerWidget.set_visible(false);
         }
     }
 
@@ -199,6 +225,46 @@ export class PollingSection<TItem, TResponse> {
                 this.rows.delete(key);
             }
         }
+
+        this.updateEmptyState();
+    }
+
+    /**
+     * Updates visibility / placeholder based on whether the section has rows.
+     * - `hideWhenEmpty=true`:  hides/shows `containerWidget`.
+     * - `hideWhenEmpty=false`: shows/hides an `emptyPlaceholder` label row.
+     */
+    private updateEmptyState(): void {
+        const isEmpty = this.rows.size === 0;
+
+        if (this.config.hideWhenEmpty) {
+            if (this.config.containerWidget) {
+                this.config.containerWidget.set_visible(!isEmpty);
+            }
+        } else {
+            if (isEmpty) {
+                if (!this.emptyPlaceholderRow && this.config.emptyPlaceholder) {
+                    const label = new Gtk.Label({
+                        label: this.config.emptyPlaceholder,
+                        margin_top: 18,
+                        margin_bottom: 18,
+                    });
+                    label.add_css_class('dim-label');
+                    const row = new Gtk.ListBoxRow({
+                        selectable: false,
+                        activatable: false,
+                    });
+                    row.set_child(label);
+                    this.emptyPlaceholderRow = row;
+                    this.config.listBox.append(row);
+                }
+            } else {
+                if (this.emptyPlaceholderRow) {
+                    this.config.listBox.remove(this.emptyPlaceholderRow);
+                    this.emptyPlaceholderRow = null;
+                }
+            }
+        }
     }
 
     private clearRows(): void {
@@ -211,7 +277,16 @@ export class PollingSection<TItem, TResponse> {
             this.config.listBox.remove(this.placeholderRow);
             this.placeholderRow = null;
         }
+
+        if (this.emptyPlaceholderRow) {
+            this.config.listBox.remove(this.emptyPlaceholderRow);
+            this.emptyPlaceholderRow = null;
+        }
+
         this.isConnected = true;
         this.hasShownErrorToast = false;
+
+        // After clearing, apply empty state immediately
+        this.updateEmptyState();
     }
 }
