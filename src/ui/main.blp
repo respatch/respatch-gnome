@@ -43,8 +43,9 @@ Adw.ApplicationWindow window {
                                 styles ["navigation-sidebar"]
                                 selection-mode: single;
 
-                                Adw.ActionRow {
+                                Adw.ActionRow dashboard_row {
                                     title: _("Dashboard");
+                                    activatable: true;
                                     [prefix] Gtk.Image { icon-name: "utilities-system-monitor-symbolic"; }
                                 }
                             }
@@ -90,7 +91,7 @@ Adw.ApplicationWindow window {
 
                                 Gtk.ListBox transport_list {
                                     styles ["navigation-sidebar"]
-                                    selection-mode: none;
+                                    selection-mode: single;
                                 }
                             }
                         }
@@ -132,6 +133,14 @@ Adw.ApplicationWindow window {
                                     Adw.PreferencesGroup {
                                         title: _("Zlyhané (Vyžadujú pozornosť)");
 
+                                        header-suffix: Gtk.Button failed_messages_overflow_button {
+                                            icon-name: "web-browser-symbolic";
+                                            tooltip-text: _("Zobraziť všetky v prehliadači");
+                                            visible: false;
+                                            valign: center;
+                                            styles ["flat", "circular"]
+                                        };
+
                                         Gtk.ListBox failed_messages_list {
                                             styles ["boxed-list"]
                                             selection-mode: none;
@@ -143,11 +152,25 @@ Adw.ApplicationWindow window {
                                 Adw.PreferencesGroup {
                                     title: _("Nedávno spracované");
 
-                                    header-suffix: Gtk.Button recent_messages_pause_button {
+                                    header-suffix: Gtk.Box {
+                                        orientation: horizontal;
+                                        spacing: 4;
+                                        valign: center;
+
+                                        Gtk.Button recent_messages_overflow_button {
+                                            icon-name: "web-browser-symbolic";
+                                            tooltip-text: _("Zobraziť všetky v prehliadači");
+                                            visible: false;
+                                            valign: center;
+                                            styles ["flat", "circular"]
+                                        }
+
+                                        Gtk.Button recent_messages_pause_button {
                                         icon-name: "media-playback-pause-symbolic";
                                         tooltip-text: _("Pozastaviť obnovovanie");
                                         valign: center;
                                         styles ["flat", "circular"]
+                                        }
                                     };
 
                                     Gtk.ListBox recent_messages_list {

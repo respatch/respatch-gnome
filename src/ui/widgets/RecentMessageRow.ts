@@ -4,6 +4,7 @@ import { _ } from '../../gettext.js';
 import type { RecentMessage } from '../../models/RecentMessage.js';
 import type { RowController } from './PollingSection.js';
 import { formatDuration } from '../../utils/format.js';
+import type { BrowserService } from '../../services/BrowserService.js';
 
 /**
  * Callback fired when the user clicks the transport pill of a row.
@@ -26,8 +27,13 @@ export class RecentMessageRow implements RowController<RecentMessage> {
     private readonly transportButton: Gtk.Button;
     private readonly durationLabel: Gtk.Label;
     private readonly memoryLabel: Gtk.Label;
+    private currentClass: string = '';
 
-    constructor(private readonly uiDir: string, private readonly onTransportClick?: TransportClickHandler) {
+    constructor(
+        private readonly uiDir: string,
+        private readonly browserService: BrowserService,
+        private readonly onTransportClick?: TransportClickHandler,
+    ) {
         const builder = new Gtk.Builder();
         builder.add_from_file(`${uiDir}/ui/recent_message_row.ui`);
 
@@ -43,6 +49,13 @@ export class RecentMessageRow implements RowController<RecentMessage> {
                 this.onTransportClick(t);
             }
         });
+
+        // Adw.ActionRow má vlastný `activated` signál, ktorý sa vyvolá keď je
+        // activatable a používateľ na riadok klikne. Toto je spoľahlivejšie ako
+        // `row-activated` na ListBoxe pri Adw.ActionRow s interaktívnymi suffixmi.
+        this.row.connect('activated', () => {
+            this.openMessageType();
+        });
     }
 
     update(item: RecentMessage): void {
@@ -57,12 +70,19 @@ export class RecentMessageRow implements RowController<RecentMessage> {
             this.icon.add_css_class('success');
         }
 
+        this.currentClass = item.class;
         this.row.title = `#${item.title}`;
         this.row.subtitle = `${item.status ?? _('OK')}\n${this.formatHandledAt(item.handledAt)}`;
 
         this.transportButton.label = item.transport;
         this.durationLabel.label = formatDuration(item.duration);
         this.memoryLabel.label = item.memory;
+    }
+
+    openMessageType(): void {
+        if (this.currentClass) {
+            this.browserService.openUrl(this.browserService.getMessageTypeUrl(this.currentClass));
+        }
     }
 
     getWidget(): Gtk.ListBoxRow {

@@ -9,6 +9,7 @@ import type { Project } from '../../models/Project.js';
 import { TransportRow, TransportItem } from '../widgets/TransportRow.js';
 import { FailedTransportRow, FailedTransportItem } from '../widgets/FailedTransportRow.js';
 import { SettingsService } from '../../services/SettingsService.js';
+import { BrowserService } from '../../services/BrowserService.js';
 import { RecentMessageRow } from '../widgets/RecentMessageRow.js';
 import { FailedMessageRow } from '../widgets/FailedMessageRow.js';
 import { PollingSection } from '../widgets/PollingSection.js';
@@ -36,6 +37,7 @@ export class MainWindow {
     private readonly toastOverlay: Adw.ToastOverlay;
     private projects: Project[] = [];
 
+    private readonly browserService: BrowserService;
     private readonly failedTransportsSection: PollingSection<FailedTransportItem, TransportsResponse>;
     private readonly transportSection: PollingSection<TransportItem, TransportsResponse>;
     private readonly recentMessagesSection: PollingSection<RecentMessage, RecentMessagesResponse>;
@@ -50,6 +52,7 @@ export class MainWindow {
         private readonly logger: LoggerService,
         private readonly settingsService: SettingsService
     ) {
+        this.browserService = new BrowserService(settingsService, () => this.getActiveProject());
         const builder = new Gtk.Builder();
         builder.add_from_file(`${uiDir}/ui/main.ui`);
 
@@ -57,6 +60,7 @@ export class MainWindow {
         this.window.set_application(app);
 
         this.wireHeaderButtons(builder, wm);
+        this.wireDashboardRow(builder);
 
         this.serverSwitcher = builder.get_object('server_switcher') as Gtk.DropDown;
         this.toastOverlay = builder.get_object('toast_overlay') as Adw.ToastOverlay;
@@ -86,6 +90,13 @@ export class MainWindow {
 
         const manageServersBtn = builder.get_object('manage_servers_button') as Gtk.Button | null;
         manageServersBtn?.connect('clicked', () => wm.showManageServers(this.window));
+    }
+
+    private wireDashboardRow(builder: Gtk.Builder): void {
+        const dashboardRow = builder.get_object('dashboard_row') as Adw.ActionRow | null;
+        dashboardRow?.connect('activated', () => {
+            this.browserService.openUrl(this.browserService.getMessengerBaseUrl());
+        });
     }
 
     // ----- Server switcher -----------------------------------------------------
@@ -159,13 +170,7 @@ export class MainWindow {
             createRow: (item) => new FailedTransportRow(
                 item.transportName,
                 uiDir,
-                (transportName) => {
-                    const p = this.getActiveProject();
-                    const base = this.settingsService.getMessengerDashboardUrl().trim()
-                        || (p ? `${p.url.replace(/\/_respatch\/api\/?$/, '')}/admin/messenger` : '');
-                    return `${base.replace(/\/$/, '')}/transport/${transportName}`;
-                },
-                () => this.settingsService.getPreferredBrowser(),
+                this.browserService,
             ),
         });
     }
@@ -173,6 +178,15 @@ export class MainWindow {
     private createTransportSection(builder: Gtk.Builder, uiDir: string): PollingSection<TransportItem, TransportsResponse> {
         const list = builder.get_object('transport_list') as Gtk.ListBox;
         const pauseBtn = builder.get_object('transport_pause_button') as Gtk.Button;
+
+        const transportRowMap = new Map<Gtk.ListBoxRow, TransportRow>();
+
+        list.connect('row-activated', (_listBox, row) => {
+            const transportRow = transportRowMap.get(row);
+            if (transportRow) {
+                this.browserService.openUrl(this.browserService.getTransportUrl(transportRow.transportName));
+            }
+        });
 
         return new PollingSection<TransportItem, TransportsResponse>({
             name: 'Transports',
@@ -193,13 +207,18 @@ export class MainWindow {
             },
             toItems: (response) => Object.entries(response).map(([name, info]) => ({ name, info })),
             keyOf: (item) => item.name,
-            createRow: (item) => new TransportRow(item.name, uiDir),
+            createRow: (item) => {
+                const tr = new TransportRow(item.name, uiDir, this.browserService);
+                transportRowMap.set(tr.getWidget(), tr);
+                return tr;
+            },
         });
     }
 
     private createRecentMessagesSection(builder: Gtk.Builder, uiDir: string): PollingSection<RecentMessage, RecentMessagesResponse> {
         const list = builder.get_object('recent_messages_list') as Gtk.ListBox;
         const pauseBtn = builder.get_object('recent_messages_pause_button') as Gtk.Button;
+        const overflowBtn = builder.get_object('recent_messages_overflow_button') as Gtk.Button;
 
         return new PollingSection<RecentMessage, RecentMessagesResponse>({
             name: 'RecentMessages',
@@ -207,6 +226,9 @@ export class MainWindow {
             hideWhenEmpty: false,
             emptyPlaceholder: _('Žiadne správy'),
             pauseButton: pauseBtn,
+            overflowButton: overflowBtn,
+            onOverflowOpen: () => this.browserService.openUrl(this.browserService.getRecentMessagesUrl()),
+            maxRows: 15,
             toastOverlay: this.toastOverlay,
             intervalSeconds: POLL_INTERVAL_SECONDS,
             logger: this.logger,
@@ -217,7 +239,7 @@ export class MainWindow {
             },
             toItems: (response) => response,
             keyOf: (msg) => String(msg.id),
-            createRow: () => new RecentMessageRow(uiDir, (transport) => {
+            createRow: () => new RecentMessageRow(uiDir, this.browserService, (transport) => {
                 // Future: open transport-detail window via WindowManager.
                 this.logger.info(`Klik na transport: ${transport}`);
             }),
@@ -227,6 +249,7 @@ export class MainWindow {
     private createFailedMessagesSection(builder: Gtk.Builder, uiDir: string): PollingSection<FailedMessage, FailedMessagesResponse> {
         const list = builder.get_object('failed_messages_list') as Gtk.ListBox;
         const container = builder.get_object('failed_messages_box') as Gtk.Widget;
+        const overflowBtn = builder.get_object('failed_messages_overflow_button') as Gtk.Button;
 
         const actionHandler = new MessageActionHandler({
             apiClient: this.apiClient,
@@ -241,6 +264,9 @@ export class MainWindow {
             listBox: list,
             hideWhenEmpty: true,
             containerWidget: container,
+            overflowButton: overflowBtn,
+            onOverflowOpen: () => this.browserService.openUrl(this.browserService.getFailedMessagesUrl()),
+            maxRows: 6,
             toastOverlay: this.toastOverlay,
             intervalSeconds: POLL_INTERVAL_SECONDS,
             logger: this.logger,
@@ -269,7 +295,7 @@ export class MainWindow {
                 }
 
                 all.sort((a, b) => new Date(b.dispatched).getTime() - new Date(a.dispatched).getTime());
-                return all.slice(0, 6);
+                return all;
             },
             toItems: (response) => response,
             keyOf: (msg) => `${msg.transport}:${msg.id}`,

@@ -1,9 +1,8 @@
 import Gtk from 'gi://Gtk?version=4.0';
 import Adw from 'gi://Adw?version=1';
-import GLib from 'gi://GLib';
-import Gio from 'gi://Gio';
-import { _, ngettext } from '../../gettext.js';
+import { ngettext } from '../../gettext.js';
 import type { RowController } from './PollingSection.js';
+import type { BrowserService } from '../../services/BrowserService.js';
 
 export interface FailedTransportItem {
     transportName: string;
@@ -16,8 +15,7 @@ export class FailedTransportRow implements RowController<FailedTransportItem> {
     constructor(
         public readonly transportName: string,
         private readonly uiDir: string,
-        private readonly getTransportUrl: (transportName: string) => string,
-        private readonly getPreferredBrowser: () => string,
+        private readonly browserService: BrowserService,
     ) {
         const builder = new Gtk.Builder();
         builder.add_from_file(`${uiDir}/ui/failed_transport_row.ui`);
@@ -25,8 +23,8 @@ export class FailedTransportRow implements RowController<FailedTransportItem> {
         this.row = builder.get_object('failed_transport_row') as Adw.ActionRow;
 
         this.row.connect('activated', () => {
-            const url = this.getTransportUrl(this.transportName);
-            this._openUrl(url);
+            const url = this.browserService.getTransportUrl(this.transportName);
+            this.browserService.openUrl(url);
         });
     }
 
@@ -42,22 +40,5 @@ export class FailedTransportRow implements RowController<FailedTransportItem> {
 
     getWidget(): Gtk.ListBoxRow {
         return this.row as unknown as Gtk.ListBoxRow;
-    }
-
-    private _openUrl(url: string): void {
-        const browser = this.getPreferredBrowser().trim();
-        if (browser) {
-            try {
-                GLib.spawn_command_line_async(`${browser} ${url}`);
-                return;
-            } catch {
-                // fall through to default
-            }
-        }
-        try {
-            Gio.AppInfo.launch_default_for_uri(url, null);
-        } catch (e) {
-            // nothing we can do
-        }
     }
 }

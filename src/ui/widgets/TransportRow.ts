@@ -1,6 +1,7 @@
 import Gtk from 'gi://Gtk?version=4.0';
 import type { TransportInfo } from '../../models/Transport.js';
 import type { RowController } from './PollingSection.js';
+import type { BrowserService } from '../../services/BrowserService.js';
 
 /** A single transport entry, identified by its `name`. */
 export interface TransportItem {
@@ -14,7 +15,11 @@ export class TransportRow implements RowController<TransportItem> {
     private subtitleLabel: Gtk.Label;
     private progressBar: Gtk.ProgressBar;
 
-    constructor(public readonly transportName: string, private readonly uiDir: string) {
+    constructor(
+        public readonly transportName: string,
+        private readonly uiDir: string,
+        private readonly browserService: BrowserService,
+    ) {
         const builder = new Gtk.Builder();
         builder.add_from_file(`${uiDir}/ui/transport_row.ui`);
 

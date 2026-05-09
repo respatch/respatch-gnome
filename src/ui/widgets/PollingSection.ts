@@ -53,6 +53,27 @@ export interface PollingSectionConfig<TItem, TResponse> {
     pauseButton?: Gtk.Button;
     /** Optional ToastOverlay for showing error toasts. */
     toastOverlay?: Adw.ToastOverlay;
+    /**
+     * Maximum number of rows to display at once.  When the API returns more
+     * items than this limit, only the first `maxRows` items are rendered and a
+     * button (`overflowButton`) is shown to indicate that more items exist.
+     * If omitted (or `0`), all rows are displayed.
+     */
+    maxRows?: number;
+    /**
+     * Button shown next to the section heading when the number of items
+     * exceeds `maxRows`.  The button should be hidden by default in the UI
+     * file; `PollingSection` will show/hide it automatically and connect its
+     * `clicked` signal to open the overflow URL in the browser.
+     *
+     * Requires `onOverflowOpen` to be set as well.
+     */
+    overflowButton?: Gtk.Button;
+    /**
+     * Called when the user clicks `overflowButton`.  Should open the relevant
+     * URL in the browser (e.g. via `BrowserService.openUrl`).
+     */
+    onOverflowOpen?: () => void;
     /** Polling interval in seconds. */
     intervalSeconds: number;
     /** Logger used for warnings on failed fetches. */
@@ -84,10 +105,16 @@ export class PollingSection<TItem, TResponse> {
     private hasShownErrorToast: boolean = false;
     private placeholderRow: Gtk.Widget | null = null;
     private emptyPlaceholderRow: Gtk.ListBoxRow | null = null;
+    private overflowCount: number = 0;
 
     constructor(private readonly config: PollingSectionConfig<TItem, TResponse>) {
         if (this.config.pauseButton) {
             this.config.pauseButton.connect('clicked', () => this.togglePause());
+        }
+
+        if (this.config.overflowButton && this.config.onOverflowOpen) {
+            this.config.overflowButton.connect('clicked', () => this.config.onOverflowOpen!());
+            this.config.overflowButton.set_visible(false);
         }
 
         // Initial visibility state
@@ -202,10 +229,26 @@ export class PollingSection<TItem, TResponse> {
 
     private render(response: TResponse): void {
         const seen = new Set<string>();
+        const maxRows = this.config.maxRows ?? 0;
+        let visibleCount = 0;
+        let totalCount = 0;
 
         for (const item of this.config.toItems(response)) {
             const key = this.config.keyOf(item);
+            totalCount++;
+
+            if (maxRows > 0 && totalCount > maxRows) {
+                // Item is beyond the limit — remove it if it was previously rendered.
+                const existing = this.rows.get(key);
+                if (existing) {
+                    this.config.listBox.remove(existing.getWidget());
+                    this.rows.delete(key);
+                }
+                continue;
+            }
+
             seen.add(key);
+            visibleCount++;
 
             const existing = this.rows.get(key);
             if (existing) {
@@ -218,6 +261,8 @@ export class PollingSection<TItem, TResponse> {
             }
         }
 
+        this.overflowCount = Math.max(0, totalCount - visibleCount);
+
         // Remove rows that are no longer present in the response.
         for (const [key, row] of this.rows) {
             if (!seen.has(key)) {
@@ -226,7 +271,27 @@ export class PollingSection<TItem, TResponse> {
             }
         }
 
+        this.updateOverflowButton();
         this.updateEmptyState();
+    }
+
+    /**
+     * Shows or hides the overflow button based on whether there are items
+     * beyond the `maxRows` limit.
+     */
+    private updateOverflowButton(): void {
+        const btn = this.config.overflowButton;
+        if (!btn) return;
+
+        const hasOverflow = this.overflowCount > 0;
+        btn.set_visible(hasOverflow);
+        if (hasOverflow) {
+            btn.set_tooltip_text(
+                _('Zobrazuje sa %d z %d správ. Kliknutím otvoríte všetky v prehliadači.')
+                    .replace('%d', String(this.rows.size))
+                    .replace('%d', String(this.rows.size + this.overflowCount))
+            );
+        }
     }
 
     /**

@@ -1,6 +1,7 @@
 export interface RecentMessage {
     id: number;
     title: string;
+    class: string;
     status: string | null;
     transport: string;
     duration: number;
