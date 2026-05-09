@@ -8,6 +8,10 @@ export class SettingsService {
         this.settings = new Gio.Settings({ schema_id: 'org.respatch' });
     }
 
+    public getSettings(): Gio.Settings {
+        return this.settings;
+    }
+
     public getProjects(): Project[] {
         const projectsStr = this.settings.get_strv('projects');
         return projectsStr.map(str => JSON.parse(str) as Project);
@@ -59,6 +63,14 @@ export class SettingsService {
 
     public setLogToFile(enabled: boolean): void {
         this.settings.set_boolean('log-to-file', enabled);
+    }
+
+    public getLogPath(): string {
+        return this.settings.get_string('log-path');
+    }
+
+    public setLogPath(path: string): void {
+        this.settings.set_string('log-path', path);
     }
 
     public getMessengerDashboardUrl(): string {

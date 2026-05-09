@@ -21,6 +21,11 @@
       <summary>Log to file</summary>
       <description>Whether to log to a file.</description>
     </key>
+    <key name="log-path" type="s">
+      <default>""</default>
+      <summary>Log path</summary>
+      <description>Path to the application log file. If empty, the default path is used.</description>
+    </key>
     <key name="messenger-dashboard-url" type="s">
       <default>""</default>
       <summary>Messenger dashboard URL</summary>

@@ -52,10 +52,11 @@ Adw.PreferencesWindow settings_window {
                 sensitive: bind logging_enabled_row.active;
             }
 
-            Adw.ActionRow {
+            Adw.EntryRow log_path_row {
                 title: _("Log path");
-                subtitle: "~/.local/share/respatch/respatch.log";
-                selectable: true;
+                /// Translators: default log path placeholder
+                text: "~/.local/share/respatch/respatch.log";
+                show-apply-button: true;
             }
         }
     }

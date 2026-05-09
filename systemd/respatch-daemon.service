@@ -1,0 +1,15 @@
+[Unit]
+Description=Respatch Background Daemon
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+# Upravte cestu k zložke s projektom Respatch podľa vašej inštalácie
+WorkingDirectory=%h/phpProjects/contrib/respatch/app
+Environment="GSETTINGS_SCHEMA_DIR=%h/phpProjects/contrib/respatch/app/data"
+ExecStart=/usr/bin/gjs -m dist/daemon.mjs
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

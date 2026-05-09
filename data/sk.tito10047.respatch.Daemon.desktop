@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Respatch Daemon
+Comment=Background service for Respatch notifications
+Exec=true
+Icon=utilities-system-monitor
+Terminal=false
+Type=Application
+NoDisplay=true
+X-GNOME-UsesNotifications=true

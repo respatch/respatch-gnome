@@ -6,9 +6,10 @@
   "scripts": {
     "build:ui": "mkdir -p dist/ui && blueprint-compiler batch-compile dist/ui src/ui src/ui/*.blp && cp src/ui/*.css dist/ui/ 2>/dev/null || true",
     "build:ts": "esbuild src/main.ts --bundle --format=esm --outfile=dist/main.mjs --external:gi://* --external:gettext",
+    "build:daemon": "esbuild src/daemon.ts --bundle --format=esm --outfile=dist/daemon.mjs --external:gi://* --external:gettext",
     "build:schemas": "glib-compile-schemas data/",
     "build:translations": "mkdir -p locale/sk/LC_MESSAGES && msgfmt po/sk.po -o locale/sk/LC_MESSAGES/respatch.mo",
-    "build": "npm run build:ui && npm run build:ts && npm run build:schemas && npm run build:translations",
+    "build": "npm run build:ui && npm run build:ts && npm run build:daemon && npm run build:schemas && npm run build:translations",
     "start": "npm run build && GSETTINGS_SCHEMA_DIR=$(pwd)/data gjs -m dist/main.mjs",
     "test": "vitest run"
   },

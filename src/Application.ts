@@ -41,8 +41,13 @@ export const Application = GObject.registerClass({
         const logToFile = this.settingsService.getLogToFile();
 
         if (logToFile) {
-            const logDir = GLib.build_filenamev([GLib.get_user_data_dir(), 'respatch']);
-            const logPath = GLib.build_filenamev([logDir, 'respatch.log']);
+            let logPath = this.settingsService.getLogPath();
+            if (!logPath) {
+                const logDir = GLib.build_filenamev([GLib.get_user_data_dir(), 'respatch']);
+                logPath = GLib.build_filenamev([logDir, 'respatch.log']);
+            } else if (logPath.startsWith('~/')) {
+                logPath = GLib.build_filenamev([GLib.get_home_dir(), logPath.slice(2)]);
+            }
             transports.push(new FileTransport(logPath));
         }
 

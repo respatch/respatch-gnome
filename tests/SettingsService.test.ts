@@ -62,4 +62,17 @@ describe('SettingsService', () => {
         const expectedProjects = [existingProjects[1]];
         expect(mockSetStrv).toHaveBeenCalledWith('projects', expectedProjects.map(p => JSON.stringify(p)));
     });
+
+    it('should return settings instance', () => {
+        const settings = service.getSettings();
+        expect(settings).toBeDefined();
+        expect(typeof (settings as any).get_strv).toBe('function');
+    });
+
+    it('should return active project', () => {
+        mockGetString.mockReturnValue('123');
+        const activeProjectId = service.getActiveProject();
+        expect(activeProjectId).toBe('123');
+        expect(mockGetString).toHaveBeenCalledWith('last-active-project');
+    });
 });

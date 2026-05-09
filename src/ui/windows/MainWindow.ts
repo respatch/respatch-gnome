@@ -1,5 +1,6 @@
 import Gtk from 'gi://Gtk?version=4.0';
 import Adw from 'gi://Adw?version=1';
+import Gio from 'gi://Gio';
 import { _ } from '../../gettext.js';
 import { WindowManager } from '../../WindowManager.js';
 import { ProjectStore } from '../../stores/ProjectStore.js';
@@ -45,6 +46,9 @@ export class MainWindow {
     private readonly recentMessagesSection: PollingSection<RecentMessage, RecentMessagesResponse>;
     private readonly failedMessagesSection: PollingSection<FailedMessage, FailedMessagesResponse>;
 
+    private daemonRunning = false;
+    private readonly daemonWatchId: number;
+
     constructor(
         app: Adw.Application,
         uiDir: string,
@@ -79,6 +83,20 @@ export class MainWindow {
         this.transportSection.start();
         this.recentMessagesSection.start();
         this.failedMessagesSection.start();
+
+        this.daemonWatchId = Gio.bus_watch_name(
+            Gio.BusType.SESSION,
+            'sk.tito10047.respatch.Daemon',
+            Gio.BusNameWatcherFlags.NONE,
+            () => { 
+                this.logger.info('Daemon is running. Disabling local notifications.');
+                this.daemonRunning = true; 
+            },
+            () => { 
+                this.logger.info('Daemon is NOT running. Enabling local notifications.');
+                this.daemonRunning = false; 
+            }
+        );
     }
 
     present(): void {
@@ -305,7 +323,11 @@ export class MainWindow {
             toItems: (response) => response,
             keyOf: (msg) => `${msg.transport}:${msg.id}`,
             createRow: () => new FailedMessageRow(uiDir, actionHandler.createHandler()),
-            onRenderedKeys: (keys) => this.notificationService.processFailedMessages(keys),
+            onRenderedKeys: (keys) => {
+                if (!this.daemonRunning) {
+                    this.notificationService.processFailedMessages(keys);
+                }
+            },
         });
     }
 }
