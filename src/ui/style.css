@@ -13,9 +13,25 @@
     background-color: rgba(255, 255, 255, 0.1); /* Pozadie prázdnej časti */
 }
 
-/* Ak je vyťaženie vysoké, môžeme farbu meniť dynamicky cez JS pridaním triedy */
-.worker-progress.high-load progress {
-    background-color: #ed333b; /* Červená pri preťažení */
+/* Farby progress baru podľa vyťaženia */
+.progress-empty > trough > progress {
+    background-color: alpha(currentColor, 0.15);
+}
+
+.progress-green > trough > progress {
+    background-color: #33d17a;
+}
+
+.progress-yellow > trough > progress {
+    background-color: #f6d32d;
+}
+
+.progress-orange > trough > progress {
+    background-color: #ff7800;
+}
+
+.progress-red > trough > progress {
+    background-color: #ed333b;
 }
 
 .caption {

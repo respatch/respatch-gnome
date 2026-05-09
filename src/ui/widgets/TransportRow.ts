@@ -32,7 +32,29 @@ export class TransportRow implements RowController<TransportItem> {
         this.subtitleLabel.label = `${count} správ • ${info.workers} workerov • ${info.memory}`;
 
         const fraction = info.workers > 0 ? info.usedWorkers / info.workers : 0;
-        this.progressBar.fraction = Math.min(1, Math.max(0, fraction));
+        const clampedFraction = Math.min(1, Math.max(0, fraction));
+        this.progressBar.fraction = clampedFraction;
+
+        this._updateProgressBarColor(clampedFraction);
+    }
+
+    private _updateProgressBarColor(fraction: number): void {
+        const styleContext = this.progressBar.get_style_context();
+        for (const cls of ['progress-empty', 'progress-green', 'progress-yellow', 'progress-orange', 'progress-red']) {
+            styleContext.remove_class(cls);
+        }
+
+        if (fraction === 0) {
+            styleContext.add_class('progress-empty');
+        } else if (fraction < 0.5) {
+            styleContext.add_class('progress-green');
+        } else if (fraction < 0.75) {
+            styleContext.add_class('progress-yellow');
+        } else if (fraction < 0.9) {
+            styleContext.add_class('progress-orange');
+        } else {
+            styleContext.add_class('progress-red');
+        }
     }
 
     getWidget(): Gtk.ListBoxRow {
