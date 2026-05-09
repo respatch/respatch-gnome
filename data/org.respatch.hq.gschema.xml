@@ -21,5 +21,15 @@
       <summary>Log to file</summary>
       <description>Whether to log to a file.</description>
     </key>
+    <key name="messenger-dashboard-url" type="s">
+      <default>""</default>
+      <summary>Messenger dashboard URL</summary>
+      <description>Base URL of the Symfony Messenger Monitor dashboard (e.g. https://example.com/admin/messenger).</description>
+    </key>
+    <key name="preferred-browser" type="s">
+      <default>""</default>
+      <summary>Preferred browser</summary>
+      <description>Command of the browser to use when opening URLs (e.g. firefox, chromium). Leave empty to use the system default.</description>
+    </key>
   </schema>
 </schemalist>

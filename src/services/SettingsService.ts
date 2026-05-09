@@ -60,4 +60,20 @@ export class SettingsService {
     public setLogToFile(enabled: boolean): void {
         this.settings.set_boolean('log-to-file', enabled);
     }
+
+    public getMessengerDashboardUrl(): string {
+        return this.settings.get_string('messenger-dashboard-url');
+    }
+
+    public setMessengerDashboardUrl(url: string): void {
+        this.settings.set_string('messenger-dashboard-url', url);
+    }
+
+    public getPreferredBrowser(): string {
+        return this.settings.get_string('preferred-browser');
+    }
+
+    public setPreferredBrowser(browser: string): void {
+        this.settings.set_string('preferred-browser', browser);
+    }
 }

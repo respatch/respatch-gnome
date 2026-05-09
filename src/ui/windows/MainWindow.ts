@@ -7,6 +7,8 @@ import { ApiClient } from '../../services/ApiClient.js';
 import { LoggerService } from '../../services/LoggerService.js';
 import type { Project } from '../../models/Project.js';
 import { TransportRow, TransportItem } from '../widgets/TransportRow.js';
+import { FailedTransportRow, FailedTransportItem } from '../widgets/FailedTransportRow.js';
+import { SettingsService } from '../../services/SettingsService.js';
 import { RecentMessageRow } from '../widgets/RecentMessageRow.js';
 import { FailedMessageRow } from '../widgets/FailedMessageRow.js';
 import { PollingSection } from '../widgets/PollingSection.js';
@@ -34,6 +36,7 @@ export class MainWindow {
     private readonly toastOverlay: Adw.ToastOverlay;
     private projects: Project[] = [];
 
+    private readonly failedTransportsSection: PollingSection<FailedTransportItem, TransportsResponse>;
     private readonly transportSection: PollingSection<TransportItem, TransportsResponse>;
     private readonly recentMessagesSection: PollingSection<RecentMessage, RecentMessagesResponse>;
     private readonly failedMessagesSection: PollingSection<FailedMessage, FailedMessagesResponse>;
@@ -44,7 +47,8 @@ export class MainWindow {
         wm: WindowManager,
         private readonly store: ProjectStore,
         private readonly apiClient: ApiClient,
-        private readonly logger: LoggerService
+        private readonly logger: LoggerService,
+        private readonly settingsService: SettingsService
     ) {
         const builder = new Gtk.Builder();
         builder.add_from_file(`${uiDir}/ui/main.ui`);
@@ -59,10 +63,12 @@ export class MainWindow {
         this.stringList = new Gtk.StringList();
         this.setupServerSwitcher();
 
+        this.failedTransportsSection = this.createFailedTransportsSection(builder, uiDir);
         this.transportSection = this.createTransportSection(builder, uiDir);
         this.recentMessagesSection = this.createRecentMessagesSection(builder, uiDir);
         this.failedMessagesSection = this.createFailedMessagesSection(builder, uiDir);
 
+        this.failedTransportsSection.start();
         this.transportSection.start();
         this.recentMessagesSection.start();
         this.failedMessagesSection.start();
@@ -89,6 +95,7 @@ export class MainWindow {
 
         this.store.connect('notify::active-project', () => {
             this.syncSwitcher();
+            this.failedTransportsSection.restart();
             this.transportSection.restart();
             this.recentMessagesSection.restart();
             this.failedMessagesSection.restart();
@@ -125,6 +132,42 @@ export class MainWindow {
         const activeId = this.store.active_project;
         if (!activeId) return null;
         return this.store.getProjects().find(p => p.id === activeId) ?? null;
+    }
+
+    private createFailedTransportsSection(builder: Gtk.Builder, uiDir: string): PollingSection<FailedTransportItem, TransportsResponse> {
+        const list = builder.get_object('failed_transport_list') as Gtk.ListBox;
+        const container = builder.get_object('failed_transports_box') as Gtk.Widget;
+
+        return new PollingSection<FailedTransportItem, TransportsResponse>({
+            name: 'FailedTransports',
+            listBox: list,
+            hideWhenEmpty: true,
+            containerWidget: container,
+            toastOverlay: this.toastOverlay,
+            intervalSeconds: POLL_INTERVAL_SECONDS,
+            logger: this.logger,
+            fetcher: async () => {
+                const p = this.getActiveProject();
+                if (!p) return {} as TransportsResponse;
+                return this.apiClient.fetchTransports(p.url, p.token);
+            },
+            toItems: (response) =>
+                Object.entries(response)
+                    .filter(([, info]) => info.failure && (info.count ?? 0) > 0)
+                    .map(([name, info]) => ({ transportName: name, count: info.count ?? 0 })),
+            keyOf: (item) => item.transportName,
+            createRow: (item) => new FailedTransportRow(
+                item.transportName,
+                uiDir,
+                (transportName) => {
+                    const p = this.getActiveProject();
+                    const base = this.settingsService.getMessengerDashboardUrl().trim()
+                        || (p ? `${p.url.replace(/\/_respatch\/api\/?$/, '')}/admin/messenger` : '');
+                    return `${base.replace(/\/$/, '')}/transport/${transportName}`;
+                },
+                () => this.settingsService.getPreferredBrowser(),
+            ),
+        });
     }
 
     private createTransportSection(builder: Gtk.Builder, uiDir: string): PollingSection<TransportItem, TransportsResponse> {

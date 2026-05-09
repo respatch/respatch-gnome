@@ -18,10 +18,14 @@ export class SettingsWindow {
 
         const loggingRow = builder.get_object('logging_enabled_row') as Adw.SwitchRow;
         const logToFileRow = builder.get_object('log_to_file_row') as Adw.SwitchRow;
+        const messengerUrlRow = builder.get_object('messenger_dashboard_url_row') as Adw.EntryRow;
+        const preferredBrowserRow = builder.get_object('preferred_browser_row') as Adw.EntryRow;
 
         // Sync state from settings
         loggingRow.set_active(this.settingsService.getLoggingEnabled());
         logToFileRow.set_active(this.settingsService.getLogToFile());
+        messengerUrlRow.set_text(this.settingsService.getMessengerDashboardUrl());
+        preferredBrowserRow.set_text(this.settingsService.getPreferredBrowser());
 
         // Connect signals
         loggingRow.connect('notify::active', () => {
@@ -33,6 +37,14 @@ export class SettingsWindow {
         logToFileRow.connect('notify::active', () => {
             const active = logToFileRow.get_active();
             this.settingsService.setLogToFile(active);
+        });
+
+        messengerUrlRow.connect('apply', () => {
+            this.settingsService.setMessengerDashboardUrl(messengerUrlRow.get_text());
+        });
+
+        preferredBrowserRow.connect('apply', () => {
+            this.settingsService.setPreferredBrowser(preferredBrowserRow.get_text());
         });
     }
 

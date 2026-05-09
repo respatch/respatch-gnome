@@ -40,7 +40,8 @@ export class WindowManager {
             this,
             this.store,
             this.apiClient,
-            this.logger
+            this.logger,
+            this.settingsService
         );
         main.present();
     }

@@ -47,10 +47,17 @@ Adw.ApplicationWindow window {
                                     title: _("Dashboard");
                                     [prefix] Gtk.Image { icon-name: "utilities-system-monitor-symbolic"; }
                                 }
-                                Adw.ActionRow {
-                                    title: _("Zlyhané správy");
-                                    subtitle: _("3 čakajú na zásah");
-                                    [prefix] Gtk.Image { icon-name: "dialog-error-symbolic"; styles ["error"] }
+                            }
+
+                            Gtk.Box failed_transports_box {
+                                orientation: vertical;
+                                margin-start: 8;
+                                margin-end: 8;
+                                margin-top: 8;
+
+                                Gtk.ListBox failed_transport_list {
+                                    styles ["navigation-sidebar"]
+                                    selection-mode: none;
                                 }
                             }
 

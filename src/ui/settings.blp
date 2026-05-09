@@ -7,6 +7,33 @@ Adw.PreferencesWindow settings_window {
     default-height: 400;
 
     Adw.PreferencesPage {
+        title: _("Messenger");
+        icon-name: "mail-send-symbolic";
+
+        Adw.PreferencesGroup {
+            title: _("Dashboard");
+            description: _("Nastavenia pre Symfony Messenger Monitor.");
+
+            Adw.EntryRow messenger_dashboard_url_row {
+                title: _("URL dashboardu");
+                /// Translators: placeholder shown inside the URL entry field
+                show-apply-button: true;
+            }
+        }
+
+        Adw.PreferencesGroup {
+            title: _("Prehliadač");
+            description: _("Prehliadač, ktorý sa použije pri otváraní odkazov.");
+
+            Adw.EntryRow preferred_browser_row {
+                title: _("Príkaz prehliadača");
+                /// Translators: e.g. firefox, chromium, xdg-open
+                show-apply-button: true;
+            }
+        }
+    }
+
+    Adw.PreferencesPage {
         title: _("Diagnostika");
         icon-name: "utilities-system-monitor-symbolic";
 
