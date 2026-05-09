@@ -181,7 +181,7 @@ export class MainWindow {
             logger: this.logger,
             toastOverlay: this.toastOverlay,
             getProject: () => this.getActiveProject(),
-            onSuccess: (messageId) => this.failedMessagesSection.removeItem(messageId),
+            onSuccess: ({ message }) => this.failedMessagesSection.removeItem(`${message.transport}:${message.id}`),
         });
 
         return new PollingSection<FailedMessage, FailedMessagesResponse>({

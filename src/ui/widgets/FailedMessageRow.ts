@@ -4,13 +4,19 @@ import { _ } from '../../gettext.js';
 import type { FailedMessage } from '../../models/FailedMessage.js';
 import type { RowController } from './PollingSection.js';
 
-export type FailedMessageActionHandler = (message: FailedMessage, action: 'retry' | 'delete') => void;
+export type FailedMessageActionHandler = (message: FailedMessage, action: 'retry' | 'delete') => void | Promise<void>;
+
+export interface FailedMessageActionResult {
+    message: FailedMessage;
+    action: 'retry' | 'delete';
+}
 
 export class FailedMessageRow implements RowController<FailedMessage> {
     private readonly row: Adw.ActionRow;
     private readonly icon: Gtk.Image;
     private readonly deleteButton: Gtk.Button;
     private readonly retryButton: Gtk.Button;
+    private readonly spinner: Gtk.Spinner;
     private currentItem: FailedMessage | null = null;
 
     constructor(private readonly uiDir: string, private readonly onActionClick?: FailedMessageActionHandler) {
@@ -21,18 +27,34 @@ export class FailedMessageRow implements RowController<FailedMessage> {
         this.icon = builder.get_object('icon') as Gtk.Image;
         this.deleteButton = builder.get_object('delete_button') as Gtk.Button;
         this.retryButton = builder.get_object('retry_button') as Gtk.Button;
+        this.spinner = builder.get_object('spinner') as Gtk.Spinner;
 
         this.deleteButton.connect('clicked', () => {
             if (this.currentItem !== null && this.onActionClick) {
-                this.onActionClick(this.currentItem, 'delete');
+                this.setBusy(true);
+                void Promise.resolve(this.onActionClick(this.currentItem, 'delete'))
+                    .finally(() => this.setBusy(false));
             }
         });
 
         this.retryButton.connect('clicked', () => {
             if (this.currentItem !== null && this.onActionClick) {
-                this.onActionClick(this.currentItem, 'retry');
+                this.setBusy(true);
+                void Promise.resolve(this.onActionClick(this.currentItem, 'retry'))
+                    .finally(() => this.setBusy(false));
             }
         });
+    }
+
+    private setBusy(busy: boolean): void {
+        this.deleteButton.sensitive = !busy;
+        this.retryButton.sensitive = !busy;
+        this.spinner.visible = busy;
+        if (busy) {
+            this.spinner.start();
+        } else {
+            this.spinner.stop();
+        }
     }
 
     update(item: FailedMessage): void {

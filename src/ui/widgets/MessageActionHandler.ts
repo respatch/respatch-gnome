@@ -3,6 +3,7 @@ import { _ } from '../../gettext.js';
 import type { ApiClient } from '../../services/ApiClient.js';
 import type { LoggerService } from '../../services/LoggerService.js';
 import type { FailedMessage } from '../../models/FailedMessage.js';
+import type { FailedMessageActionResult } from './FailedMessageRow.js';
 import type { FailedMessageActionHandler } from './FailedMessageRow.js';
 
 export interface ProjectContext {
@@ -17,7 +18,7 @@ export interface MessageActionHandlerDeps {
     /** Resolves the active project context at the time of the action. */
     getProject: () => ProjectContext | null;
     /** Called after a successful action so the caller can remove the row. */
-    onSuccess: (messageId: string) => void;
+    onSuccess: (result: FailedMessageActionResult) => void;
 }
 
 /**
@@ -64,7 +65,7 @@ export class MessageActionHandler {
                         : _('Pokus o opätovné odoslanie bol úspešný'));
 
                 this.deps.toastOverlay.add_toast(new Adw.Toast({ title }));
-                this.deps.onSuccess(String(message.id));
+                this.deps.onSuccess({ message, action });
 
             } catch (err) {
                 this.deps.logger.error(
