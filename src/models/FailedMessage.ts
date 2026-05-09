@@ -8,6 +8,8 @@ export interface FailedMessage {
     id: number;
     title: string;
     dispatched: string;
+    deleteToken: string;
+    retryToken: string;
     exception: FailedMessageException | null;
 }
 

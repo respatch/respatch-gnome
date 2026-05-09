@@ -68,7 +68,7 @@ export class ApiClient {
     }
 
     async fetchTransports(url: string, token: string): Promise<TransportsResponse> {
-        return this.getJson<TransportsResponse>(url, token, '/transport');
+        return this.getJson<TransportsResponse>(url, token, '/transports');
     }
 
     async fetchRecentMessages(url: string, token: string): Promise<RecentMessagesResponse> {
