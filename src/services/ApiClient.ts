@@ -2,6 +2,7 @@ import type { FetchFn } from '../libs/fetch.js';
 import type { TransportsResponse } from '../models/Transport.js';
 import type { RecentMessagesResponse } from '../models/RecentMessage.js';
 import type { FailedMessagesResponse } from '../models/FailedMessage.js';
+import type { ApiResponse } from '../models/ApiResponse.js';
 
 /**
  * Generic fetch-like signature accepted by ApiClient.
@@ -58,6 +59,54 @@ export class ApiClient {
     }
 
     /**
+     * Performs an authenticated POST request and returns the parsed JSON response.
+     */
+    private async postJson<T>(url: string, token: string, path: string, actionToken: string, body?: any): Promise<T> {
+        const suffix = '_token='+encodeURIComponent(actionToken);
+        if (path.indexOf('?') === -1) {
+            path += '?' + suffix;
+        }else{
+            path += '&' + suffix;
+        }
+
+        const endpoint = url.replace(/\/+$/, '') + path;
+
+        console.log('POST', endpoint, body);
+
+        try {
+            const response = await this.fetchFn(endpoint, {
+                method: 'POST',
+                headers: {
+                    'X-Respatch-Token': token,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: body ? JSON.stringify(body) : undefined
+            });
+
+            if (response.status === 204) {
+                return { success: true, message: 'OK' } as unknown as T;
+            }
+
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                const errorMsg = data.message || `Chyba ${response.status}`;
+                const error = new Error(errorMsg);
+                (error as any).data = data;
+                throw error;
+            }
+
+            return data as T;
+        } catch (error) {
+            if (error instanceof Error) {
+                throw error;
+            }
+            throw new Error(String(error));
+        }
+    }
+
+    /**
      * Verifies project by calling /status endpoint
      * @param url Project base URL
      * @param token API Token
@@ -75,7 +124,15 @@ export class ApiClient {
         return this.getJson<RecentMessagesResponse>(url, token, '/recent-messages');
     }
 
-    async fetchFailedMessages(url: string, token: string): Promise<FailedMessagesResponse> {
-        return this.getJson<FailedMessagesResponse>(url, token, '/transport/async?limit=5');
+    async fetchFailedMessages(url: string, token: string, transportName: string, limit = 50): Promise<FailedMessagesResponse> {
+        return this.getJson<FailedMessagesResponse>(url, token, `/transport/${encodeURIComponent(transportName)}?limit=${limit}`);
+    }
+
+    async removeFailedMessage(url: string, token: string, transport: string, id: number, csrfToken: string): Promise<ApiResponse> {
+        return this.postJson<ApiResponse>(url, token, `/transport/${transport}/${id}/remove`,csrfToken);
+    }
+
+    async retryFailedMessage(url: string, token: string, transport: string, id: number, csrfToken: string): Promise<ApiResponse> {
+        return this.postJson<ApiResponse>(url, token, `/transport/${transport}/${id}/retry`, csrfToken);
     }
 }

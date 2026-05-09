@@ -47,13 +47,13 @@ export const handlers = [
         return new HttpResponse(null, { status: 401 });
     }),
 
-    http.get('*/transport/async', ({ request }) => {
+    http.get('*/transport/:name', ({ request, params }) => {
         const token = request.headers.get('X-Respatch-Token');
-        const url = new URL(request.url);
-        if (token === 'valid-token' && url.searchParams.get('limit') === '5') {
-            return HttpResponse.json(failedMessagesFixture);
+        if (token !== 'valid-token') {
+            return new HttpResponse(null, { status: 401 });
         }
-        return new HttpResponse(null, { status: 401 });
+        const name = params.name as string;
+        return HttpResponse.json(failedMessagesFixture.map(m => ({ ...m, transport: name })));
     }),
 
     http.get('*/status', ({ request }) => {
@@ -72,5 +72,48 @@ export const handlers = [
         }
 
         return new HttpResponse(null, { status: 404 });
+    }),
+
+    http.post('*/transport/:name/:id/remove', async ({ request, params }) => {
+        const token = request.headers.get('X-Respatch-Token');
+        const url = new URL(request.url);
+        const csrfToken = url.searchParams.get('_token');
+
+        if (token !== 'valid-token') {
+            return new HttpResponse(null, { status: 401 });
+        }
+
+        if (csrfToken !== 'valid-csrf') {
+            return HttpResponse.json({ message: 'Invalid CSRF token.' }, { status: 419 });
+        }
+
+        if (params.id === '999') {
+            return HttpResponse.json({ message: 'nenajdene' }, { status: 404 });
+        }
+
+        return new HttpResponse(null, { status: 204 });
+    }),
+
+    http.post('*/transport/:name/:id/retry', async ({ request, params }) => {
+        const token = request.headers.get('X-Respatch-Token');
+        const url = new URL(request.url);
+        const csrfToken = url.searchParams.get('_token');
+
+        if (token !== 'valid-token') {
+            return new HttpResponse(null, { status: 401 });
+        }
+
+        if (csrfToken !== 'valid-csrf') {
+            return HttpResponse.json({ message: 'Invalid CSRF token.' }, { status: 419 });
+        }
+
+        if (params.id === '999') {
+            return HttpResponse.json({ message: 'Original transport not found.' }, { status: 404 });
+        }
+
+        return HttpResponse.json({
+            success: true,
+            message: 'Message retried successfully',
+        });
     }),
 ];

@@ -9,7 +9,8 @@ import { TransportRow, TransportItem } from '../widgets/TransportRow.js';
 import { RecentMessageRow } from '../widgets/RecentMessageRow.js';
 import { FailedMessageRow } from '../widgets/FailedMessageRow.js';
 import { PollingSection } from '../widgets/PollingSection.js';
-import type { TransportsResponse } from '../../models/Transport.js';
+import { MessageActionHandler } from '../widgets/MessageActionHandler.js';
+import type {TransportInfo, TransportsResponse} from '../../models/Transport.js';
 import type { RecentMessage, RecentMessagesResponse } from '../../models/RecentMessage.js';
 import type { FailedMessage, FailedMessagesResponse } from '../../models/FailedMessage.js';
 
@@ -175,23 +176,50 @@ export class MainWindow {
     private createFailedMessagesSection(builder: Gtk.Builder, uiDir: string): PollingSection<FailedMessage, FailedMessagesResponse> {
         const list = builder.get_object('failed_messages_list') as Gtk.ListBox;
 
+        const actionHandler = new MessageActionHandler({
+            apiClient: this.apiClient,
+            logger: this.logger,
+            toastOverlay: this.toastOverlay,
+            getProject: () => this.getActiveProject(),
+            onSuccess: (messageId) => this.failedMessagesSection.removeItem(messageId),
+        });
+
         return new PollingSection<FailedMessage, FailedMessagesResponse>({
             name: 'FailedMessages',
             listBox: list,
             toastOverlay: this.toastOverlay,
             intervalSeconds: POLL_INTERVAL_SECONDS,
             logger: this.logger,
-            fetcher: () => {
+            fetcher: async () => {
                 const p = this.getActiveProject();
-                if (!p) return Promise.resolve([] as FailedMessagesResponse);
-                return this.apiClient.fetchFailedMessages(p.url, p.token);
+                if (!p) return [] as FailedMessagesResponse;
+
+                const transports = await this.apiClient.fetchTransports(p.url, p.token);
+                const failureTransportNames = Object.entries(transports)
+                    .filter(([, info]) => info.failure)
+                    .map(([name]) => name);
+
+                if (failureTransportNames.length === 0) return [] as FailedMessagesResponse;
+
+                const results = await Promise.allSettled(
+                    failureTransportNames.map(name =>
+                        this.apiClient.fetchFailedMessages(p.url, p.token, name)
+                    )
+                );
+
+                const all: FailedMessage[] = [];
+                for (const result of results) {
+                    if (result.status === 'fulfilled') {
+                        all.push(...result.value);
+                    }
+                }
+
+                all.sort((a, b) => new Date(b.dispatched).getTime() - new Date(a.dispatched).getTime());
+                return all.slice(0, 6);
             },
             toItems: (response) => response,
-            keyOf: (msg) => String(msg.id),
-            createRow: () => new FailedMessageRow(uiDir, (id, action) => {
-                this.logger.info(`Klik na zlyhanú správu #${id}: ${action}`);
-                // TODO: volanie API na retry/delete
-            }),
+            keyOf: (msg) => `${msg.transport}:${msg.id}`,
+            createRow: () => new FailedMessageRow(uiDir, actionHandler.createHandler()),
         });
     }
 }

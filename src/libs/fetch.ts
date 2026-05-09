@@ -88,7 +88,7 @@ export const gjsFetch = (uri: string, options: FetchOptions = {}): Promise<IResp
                     try {
                         const s = sess ?? session;
                         const bytes = s.send_and_read_finish(result);
-                        const status = message.get_status();
+                        const status = message.status_code as number;
                         const reason = message.get_reason_phrase() || '';
                         const finalUri = message.get_uri();
                         const url = finalUri ? finalUri.to_string() : uri;

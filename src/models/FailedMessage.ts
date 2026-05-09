@@ -11,6 +11,7 @@ export interface FailedMessage {
     deleteToken: string;
     retryToken: string;
     exception: FailedMessageException | null;
+    transport: string;
 }
 
 export type FailedMessagesResponse = FailedMessage[];

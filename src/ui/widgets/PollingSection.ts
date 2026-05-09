@@ -105,6 +105,17 @@ export class PollingSection<TItem, TResponse> {
         }
     }
 
+    /**
+     * Manually removes an item from the section.
+     */
+    removeItem(key: string): void {
+        const row = this.rows.get(key);
+        if (row) {
+            this.config.listBox.remove(row.getWidget());
+            this.rows.delete(key);
+        }
+    }
+
     private togglePause(): void {
         this.paused = !this.paused;
         const btn = this.config.pauseButton!;

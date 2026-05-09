@@ -4,14 +4,14 @@ import { _ } from '../../gettext.js';
 import type { FailedMessage } from '../../models/FailedMessage.js';
 import type { RowController } from './PollingSection.js';
 
-export type FailedMessageActionHandler = (messageId: number, action: 'retry' | 'delete') => void;
+export type FailedMessageActionHandler = (message: FailedMessage, action: 'retry' | 'delete') => void;
 
 export class FailedMessageRow implements RowController<FailedMessage> {
     private readonly row: Adw.ActionRow;
     private readonly icon: Gtk.Image;
     private readonly deleteButton: Gtk.Button;
     private readonly retryButton: Gtk.Button;
-    private currentId: number | null = null;
+    private currentItem: FailedMessage | null = null;
 
     constructor(private readonly uiDir: string, private readonly onActionClick?: FailedMessageActionHandler) {
         const builder = new Gtk.Builder();
@@ -23,32 +23,33 @@ export class FailedMessageRow implements RowController<FailedMessage> {
         this.retryButton = builder.get_object('retry_button') as Gtk.Button;
 
         this.deleteButton.connect('clicked', () => {
-            if (this.currentId !== null && this.onActionClick) {
-                this.onActionClick(this.currentId, 'delete');
+            if (this.currentItem !== null && this.onActionClick) {
+                this.onActionClick(this.currentItem, 'delete');
             }
         });
 
         this.retryButton.connect('clicked', () => {
-            if (this.currentId !== null && this.onActionClick) {
-                this.onActionClick(this.currentId, 'retry');
+            if (this.currentItem !== null && this.onActionClick) {
+                this.onActionClick(this.currentItem, 'retry');
             }
         });
     }
 
     update(item: FailedMessage): void {
-        this.currentId = item.id;
+        this.currentItem = item;
 
         this.row.title = item.title;
         const timeStr = this.formatDispatched(item.dispatched);
-        
+        const transportLabel = item.transport ? `[${item.transport}]` : '';
+
         if (item.exception === null) {
-            this.row.subtitle = timeStr;
+            this.row.subtitle = [transportLabel, timeStr].filter(Boolean).join(' • ');
             this.icon.icon_name = 'emblem-ok-symbolic';
             this.icon.add_css_class('success');
             this.icon.remove_css_class('error');
         } else {
             const errorDesc = item.exception.description ?? _('Neznáma chyba');
-            this.row.subtitle = `${errorDesc} • ${timeStr}`;
+            this.row.subtitle = [transportLabel, errorDesc, timeStr].filter(Boolean).join(' • ');
             this.icon.icon_name = 'dialog-error-symbolic';
             this.icon.add_css_class('error');
             this.icon.remove_css_class('success');
