@@ -137,10 +137,13 @@ export class MainWindow {
             toastOverlay: this.toastOverlay,
             intervalSeconds: POLL_INTERVAL_SECONDS,
             logger: this.logger,
-            fetcher: () => {
+            fetcher: async () => {
                 const p = this.getActiveProject();
-                if (!p) return Promise.resolve({} as TransportsResponse);
-                return this.apiClient.fetchTransports(p.url, p.token);
+                if (!p) return {} as TransportsResponse;
+                const transports = await this.apiClient.fetchTransports(p.url, p.token);
+                return Object.fromEntries(
+                    Object.entries(transports).filter(([, info]) => !info.failure)
+                ) as TransportsResponse;
             },
             toItems: (response) => Object.entries(response).map(([name, info]) => ({ name, info })),
             keyOf: (item) => item.name,
