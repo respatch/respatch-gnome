@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+    <gresource prefix="/sk/tito10047/respatch">
+        <file preprocess="xml-stripblanks">add_project_dialog.ui</file>
+        <file preprocess="xml-stripblanks">failed_message_row.ui</file>
+        <file preprocess="xml-stripblanks">failed_transport_row.ui</file>
+        <file preprocess="xml-stripblanks">main.ui</file>
+        <file preprocess="xml-stripblanks">manage_servers.ui</file>
+        <file preprocess="xml-stripblanks">recent_message_row.ui</file>
+        <file preprocess="xml-stripblanks">settings.ui</file>
+        <file preprocess="xml-stripblanks">transport_row.ui</file>
+        <file preprocess="xml-stripblanks">window.ui</file>
+        <file>ui/style.css</file>
+    </gresource>
+</gresources>

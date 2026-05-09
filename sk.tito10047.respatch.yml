@@ -1,0 +1,31 @@
+app-id: sk.tito10047.respatch
+runtime: org.gnome.Platform
+runtime-version: '46'
+sdk: org.gnome.Sdk
+command: respatch
+finish-args:
+    - --share=network
+    - --share=ipc
+    - --socket=fallback-x11
+    - --socket=wayland
+    - --device=dri
+    - --talk-name=org.freedesktop.Notifications
+modules:
+  # 1. Blueprint Compiler
+  - name: blueprint-compiler
+    buildsystem: meson
+    sources:
+      - type: git
+        url: https://gitlab.gnome.org/jwestman/blueprint-compiler.git
+        tag: v0.14.0 # Alebo verzia, ktorú preferuješ
+
+  # 2. Node.js (potrebný pre esbuild)
+  # Poznámka: Pre jednoduchosť skúsime použiť SDK verziu esbuild,
+  # ak by to zlyhalo, budeme musieť esbuild riešiť ako extra krok.
+
+  # 3. Samotná aplikácia
+  - name: respatch
+    buildsystem: meson
+    sources:
+      - type: dir
+        path: .
