@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-id">
+    <id>sk.tito10047.respatch</id>
+    <metadata_license>CC0-1.0</metadata_license>
+    <project_license>MIT</project_license>
+    <name>Respatch</name>
+    <summary>Monitor Symfony Messenger transports and failed messages</summary>
+    <description>
+        <p>
+            Respatch is a specialized monitoring tool designed specifically for Symfony Messenger.
+            It provides a real-time overview of your message transports, allowing you to track
+            successful processing and manage failed messages through a native desktop interface.
+        </p>
+        <ul>
+            <li>Real-time transport status monitoring</li>
+            <li>Instant desktop notifications for critical failures</li>
+            <li>Management of failed message queues</li>
+            <li>Native GNOME experience</li>
+        </ul>
+    </description>
+    <launchable type="desktop-id">sk.tito10047.respatch.desktop</launchable>
+    <screenshots>
+        <screenshot type="default">
+            <caption>Main application window showing transport status</caption>
+            <image>https://raw.githubusercontent.com/tito10047/respatch/main/data/main-screen.png</image>
+        </screenshot>
+    </screenshots>
+    <url type="homepage">https://github.com/tito10047/respatch</url>
+    <content_rating type="oars-1.1" />
+    <releases>
+        <release version="0.1.0-beta" date="2026-05-10" />
+    </releases>
+</component>
