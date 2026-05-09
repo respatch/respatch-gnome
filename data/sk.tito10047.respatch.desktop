@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Respatch
+Comment=Symfony Messenger Monitor
+Exec=bash -c 'cd /home/jozefm@no.dsidata.sk/phpProjects/contrib/respatch/app && GSETTINGS_SCHEMA_DIR=$(pwd)/data gjs -m dist/main.mjs'
+Icon=utilities-system-monitor
+Terminal=false
+Type=Application
+Categories=Development;
+StartupNotify=true
+X-GNOME-UsesNotifications=true

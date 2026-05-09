@@ -2,7 +2,7 @@ using Gtk 4.0;
 using Adw 1;
 
 Adw.PreferencesWindow settings_window {
-    title: _("Nastavenia");
+    title: _("Settings");
     default-width: 500;
     default-height: 400;
 
@@ -12,21 +12,21 @@ Adw.PreferencesWindow settings_window {
 
         Adw.PreferencesGroup {
             title: _("Dashboard");
-            description: _("Nastavenia pre Symfony Messenger Monitor.");
+            description: _("Settings for Symfony Messenger Monitor.");
 
             Adw.EntryRow messenger_dashboard_url_row {
-                title: _("URL dashboardu");
+                title: _("Dashboard URL");
                 /// Translators: placeholder shown inside the URL entry field
                 show-apply-button: true;
             }
         }
 
         Adw.PreferencesGroup {
-            title: _("Prehliadač");
-            description: _("Prehliadač, ktorý sa použije pri otváraní odkazov.");
+            title: _("Browser");
+            description: _("Browser used for opening links.");
 
             Adw.EntryRow preferred_browser_row {
-                title: _("Príkaz prehliadača");
+                title: _("Browser command");
                 /// Translators: e.g. firefox, chromium, xdg-open
                 show-apply-button: true;
             }
@@ -34,26 +34,26 @@ Adw.PreferencesWindow settings_window {
     }
 
     Adw.PreferencesPage {
-        title: _("Diagnostika");
+        title: _("Diagnostics");
         icon-name: "utilities-system-monitor-symbolic";
 
         Adw.PreferencesGroup {
-            title: _("Logovanie");
-            description: _("Konfigurácia diagnostických záznamov aplikácie.");
+            title: _("Logging");
+            description: _("Application diagnostic logs configuration.");
 
             Adw.SwitchRow logging_enabled_row {
-                title: _("Povoliť logovanie");
-                subtitle: _("Zaznamenávať informácie o behu aplikácie pre účely ladenia.");
+                title: _("Enable logging");
+                subtitle: _("Record application runtime information for debugging purposes.");
             }
 
             Adw.SwitchRow log_to_file_row {
-                title: _("Zapisovať logy do súboru");
-                subtitle: _("Ukladať záznamy do ~/.local/share/respatch/respatch.log");
+                title: _("Write logs to file");
+                subtitle: _("Save logs to ~/.local/share/respatch/respatch.log");
                 sensitive: bind logging_enabled_row.active;
             }
 
             Adw.ActionRow {
-                title: _("Cesta k logu");
+                title: _("Log path");
                 subtitle: "~/.local/share/respatch/respatch.log";
                 selectable: true;
             }

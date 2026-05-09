@@ -121,3 +121,4 @@ Aplikácia musí byť od začiatku pripravená na preklad do viacerých jazykov 
 - **Blueprint preklady:** V `.blp` súboroch používaj underscore pred názvom vlastnosti pre automatický preklad, napr. `title: _("Dashboard");` namiesto `title: "Dashboard";`.
 - **Pluralizácia:** Ak prekladáš text s počtom (napr. "3 workery"), používaj funkciu `ngettext`.
 - **Komentáre pre prekladateľov:** Ak je reťazec nejednoznačný, pridaj nad neho komentár začínajúci `///`, ktorý sa neskôr vyexportuje do `.pot` súboru.
+- Kazdy text ktory spravis musis napisat po anglicky, a okamzite ako to zapises do skriptu musis spravit preklad do ./po/sk.po. nesmies to nechavat na neskor ale spravit to okmazime

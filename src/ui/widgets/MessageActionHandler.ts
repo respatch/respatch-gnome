@@ -61,8 +61,8 @@ export class MessageActionHandler {
 
                 const title = response.message
                     || (action === 'delete'
-                        ? _('Správa bola vymazaná')
-                        : _('Pokus o opätovné odoslanie bol úspešný'));
+                        ? _('Message deleted')
+                        : _('Retry attempt was successful'));
 
                 this.deps.toastOverlay.add_toast(new Adw.Toast({ title }));
                 this.deps.onSuccess({ message, action });
@@ -81,7 +81,7 @@ export class MessageActionHandler {
 
                 const errorMsg = err instanceof Error ? err.message : String(err);
                 this.deps.toastOverlay.add_toast(
-                    new Adw.Toast({ title: _('Akcia zlyhala: ') + errorMsg })
+                    new Adw.Toast({ title: _('Action failed: ') + errorMsg })
                 );
             }
         };

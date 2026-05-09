@@ -1,4 +1,5 @@
 import Gtk from 'gi://Gtk?version=4.0';
+import { _ } from '../../gettext.js';
 import type { TransportInfo } from '../../models/Transport.js';
 import type { RowController } from './PollingSection.js';
 import type { BrowserService } from '../../services/BrowserService.js';
@@ -34,7 +35,10 @@ export class TransportRow implements RowController<TransportItem> {
     update(item: TransportItem): void {
         const info = item.info;
         const count = info.count !== null ? String(info.count) : '–';
-        this.subtitleLabel.label = `${count} správ • ${info.workers} workerov • ${info.memory}`;
+        this.subtitleLabel.label = _('%s messages • %d workers • %s memory')
+            .replace('%s', count)
+            .replace('%d', String(info.workers))
+            .replace('%s', info.memory);
 
         const fraction = info.workers > 0 ? info.usedWorkers / info.workers : 0;
         const clampedFraction = Math.min(1, Math.max(0, fraction));

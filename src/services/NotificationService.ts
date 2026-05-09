@@ -73,15 +73,16 @@ export class NotificationService {
     private sendFailedMessageNotification(id: string): void {
         const [transport] = id.split(':');
         const notification = new Gio.Notification();
-        notification.set_title(_('Zlyhala správa'));
+        notification.set_title(_('Message failed'));
         notification.set_body(
-            _('Transport "%s" obsahuje novú zlyhavšiu správu.').replace('%s', transport ?? id)
+            _('Transport "%s" contains a new failed message.').replace('%s', transport ?? id)
         );
         notification.set_priority(Gio.NotificationPriority.HIGH);
         notification.set_default_action('app.activate');
 
         // Use the message ID as notification ID so the same message never
         // produces more than one notification bubble.
+        console.log(`Sending notification for failed message ${id}`);
         this.app.send_notification(`failed-msg-${id}`, notification);
     }
 
@@ -97,9 +98,9 @@ export class NotificationService {
         this.lastCriticalAt = now;
 
         const notification = new Gio.Notification();
-        notification.set_title(_('Kritický stav systému'));
+        notification.set_title(_('Critical system state'));
         notification.set_body(
-            _('Zistených %d nových zlyhaných správ. Skontrolujte stav vašich transportov.')
+            _('%d new failed messages detected. Check your transports status.')
                 .replace('%d', String(count))
         );
         notification.set_priority(Gio.NotificationPriority.URGENT);

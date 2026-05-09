@@ -31,8 +31,8 @@ export class FailedTransportRow implements RowController<FailedTransportItem> {
     update(item: FailedTransportItem): void {
         this.row.set_title(item.transportName);
         const subtitle = ngettext(
-            '%d správa čaká na zásah',
-            '%d správy čakajú na zásah',
+            '%d message waiting for intervention',
+            '%d messages waiting for intervention',
             item.count
         ).replace('%d', String(item.count));
         this.row.set_subtitle(subtitle);

@@ -70,7 +70,7 @@ export class FailedMessageRow implements RowController<FailedMessage> {
             this.icon.add_css_class('success');
             this.icon.remove_css_class('error');
         } else {
-            const errorDesc = item.exception.description ?? _('Neznáma chyba');
+            const errorDesc = item.exception.description ?? _('Unknown error');
             this.row.subtitle = [transportLabel, errorDesc, timeStr].filter(Boolean).join(' • ');
             this.icon.icon_name = 'dialog-error-symbolic';
             this.icon.add_css_class('error');

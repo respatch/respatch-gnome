@@ -4,7 +4,7 @@ using Adw 1;
 translation-domain "org.respatch.hq";
 
 Adw.Window add_project_dialog {
-    title: _("Pridať projekt");
+    title: _("Add project");
     default-width: 450;
     default-height: 350;
     modal: true;
@@ -17,11 +17,11 @@ Adw.Window add_project_dialog {
             show-start-title-buttons: false;
             [start]
             Gtk.Button cancel_button {
-                label: _("Zrušiť");
+                label: _("Cancel");
             }
             [end]
             Gtk.Button action_button {
-                label: _("Overiť");
+                label: _("Verify");
                 styles ["suggested-action"]
             }
         }
@@ -29,13 +29,13 @@ Adw.Window add_project_dialog {
         content: Adw.PreferencesPage {
             Adw.PreferencesGroup {
                 Adw.EntryRow name_input {
-                    title: _("Názov projektu");
+                    title: _("Project name");
                 }
                 Adw.EntryRow url_input {
-                    title: _("URL adresa API");
+                    title: _("API URL");
                 }
                 Adw.PasswordEntryRow token_input {
-                    title: _("Secret kód (Token)");
+                    title: _("Secret code (Token)");
                 }
             }
         };

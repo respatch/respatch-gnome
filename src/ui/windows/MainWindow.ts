@@ -197,7 +197,7 @@ export class MainWindow {
             name: 'Transports',
             listBox: list,
             hideWhenEmpty: false,
-            emptyPlaceholder: _('Žiadne transporty'),
+            emptyPlaceholder: _('No transports'),
             pauseButton: pauseBtn,
             toastOverlay: this.toastOverlay,
             intervalSeconds: POLL_INTERVAL_SECONDS,
@@ -213,7 +213,7 @@ export class MainWindow {
             toItems: (response) => Object.entries(response).map(([name, info]) => ({ name, info })),
             keyOf: (item) => item.name,
             createRow: (item) => {
-                const tr = new TransportRow(item.name, uiDir);
+                const tr = new TransportRow(item.name, uiDir, this.browserService);
                 transportRowMap.set(tr.getWidget(), tr);
                 return tr;
             },
@@ -229,7 +229,7 @@ export class MainWindow {
             name: 'RecentMessages',
             listBox: list,
             hideWhenEmpty: false,
-            emptyPlaceholder: _('Žiadne správy'),
+            emptyPlaceholder: _('No messages'),
             pauseButton: pauseBtn,
             overflowButton: overflowBtn,
             onOverflowOpen: () => this.browserService.openUrl(this.browserService.getRecentMessagesUrl()),

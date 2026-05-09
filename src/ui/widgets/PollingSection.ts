@@ -180,10 +180,10 @@ export class PollingSection<TItem, TResponse> {
         if (this.paused) {
             this.stop();
             btn.icon_name = 'media-playback-start-symbolic';
-            btn.tooltip_text = _('Obnoviť obnovovanie');
+            btn.tooltip_text = _('Resume auto-refresh');
         } else {
             btn.icon_name = 'media-playback-pause-symbolic';
-            btn.tooltip_text = _('Pozastaviť obnovovanie');
+            btn.tooltip_text = _('Pause auto-refresh');
             this.start();
         }
     }
@@ -212,8 +212,8 @@ export class PollingSection<TItem, TResponse> {
             if (this.rows.size === 0) {
                 if (!this.placeholderRow) {
                     const statusPage = new Adw.StatusPage({
-                        title: _('Nepodarilo sa načítať dáta'),
-                        description: _('Server je momentálne nedostupný.'),
+                        title: _('Failed to load data'),
+                        description: _('Server is currently unavailable.'),
                         icon_name: 'network-offline-symbolic',
                     });
                     this.placeholderRow = statusPage;
@@ -222,7 +222,7 @@ export class PollingSection<TItem, TResponse> {
             } else {
                 if (!this.hasShownErrorToast && this.config.toastOverlay) {
                     const toast = new Adw.Toast({
-                        title: _('Nepodarilo sa načítať dáta. Server je nedostupný.'),
+                        title: _('Failed to load data. Server is unavailable.'),
                         timeout: 5,
                     });
                     this.config.toastOverlay.add_toast(toast);
@@ -296,7 +296,7 @@ export class PollingSection<TItem, TResponse> {
         btn.set_visible(hasOverflow);
         if (hasOverflow) {
             btn.set_tooltip_text(
-                _('Zobrazuje sa %d z %d správ. Kliknutím otvoríte všetky v prehliadači.')
+                _('Showing %d of %d messages. Click to open all in browser.')
                     .replace('%d', String(this.rows.size))
                     .replace('%d', String(this.rows.size + this.overflowCount))
             );

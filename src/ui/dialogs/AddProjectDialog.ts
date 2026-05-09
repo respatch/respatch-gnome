@@ -46,7 +46,7 @@ export class AddProjectDialog {
         const resetState = () => {
             if (this.state !== 'verify') {
                 this.state = 'verify';
-                this.actionBtn.set_label(_('Overiť'));
+                this.actionBtn.set_label(_('Verify'));
                 this.actionBtn.remove_css_class('success');
                 this.actionBtn.remove_css_class('destructive-action');
                 this.actionBtn.add_css_class('suggested-action');
@@ -61,9 +61,9 @@ export class AddProjectDialog {
             this.nameInput.set_text(this.existingProject.name);
             this.urlInput.set_text(this.existingProject.url);
             this.tokenInput.set_text(this.existingProject.token);
-            this.dialog.set_title(_("Upraviť projekt"));
+            this.dialog.set_title(_("Edit project"));
             this.state = 'add';
-            this.actionBtn.set_label(_('Uložiť'));
+            this.actionBtn.set_label(_('Save'));
             this.actionBtn.remove_css_class('suggested-action');
             this.actionBtn.add_css_class('success');
         }
@@ -87,27 +87,27 @@ export class AddProjectDialog {
 
     private async verify(url: string, token: string) {
         this.actionBtn.set_sensitive(false);
-        this.actionBtn.set_label(_('Overovanie...'));
+        this.actionBtn.set_label(_('Verifying...'));
         this.logger.info(`Verifying project at ${url}`);
 
         try {
             await this.apiClient.verifyProject(url, token);
             
             this.state = 'add';
-            this.actionBtn.set_label(_('Uložiť'));
+            this.actionBtn.set_label(_('Save'));
             this.actionBtn.remove_css_class('suggested-action');
             this.actionBtn.remove_css_class('destructive-action');
             this.actionBtn.add_css_class('success');
             this.logger.info(`Project at ${url} verified successfully`);
         } catch (error) {
             this.state = 'error';
-            this.actionBtn.set_label(_('Skúsiť znova'));
+            this.actionBtn.set_label(_('Try again'));
             this.actionBtn.remove_css_class('suggested-action');
             this.actionBtn.remove_css_class('success');
             this.actionBtn.add_css_class('destructive-action');
 
             const errorMessage = error instanceof Error ? error.message : String(error);
-            const toast = new Adw.Toast({ title: _('Nepodarilo sa overiť: ') + errorMessage });
+            const toast = new Adw.Toast({ title: _('Verification failed: ') + errorMessage });
             this.toastOverlay.add_toast(toast);
             this.logger.error(`Failed to verify project at ${url}`, { error: errorMessage });
         } finally {

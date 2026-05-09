@@ -1,0 +1,208 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: respatch 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-05-10 00:00+0200\n"
+"PO-Revision-Date: 2024-05-10 00:00+0200\n"
+"Last-Translator: Junie\n"
+"Language-Team: Slovak\n"
+"Language: sk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+
+msgid "Switch server"
+msgstr "Prepnúť server"
+
+msgid "Reload"
+msgstr "Načítať znova"
+
+msgid "Manage servers"
+msgstr "Spravovať servery"
+
+msgid "Settings"
+msgstr "Nastavenia"
+
+msgid "Dashboard"
+msgstr "Dashboard"
+
+msgid "Failed transports"
+msgstr "Zlyhané transporty"
+
+msgid "Pause auto-refresh"
+msgstr "Pozastaviť obnovovanie"
+
+msgid "Transports"
+msgstr "Transporty"
+
+msgid "Stop all workers"
+msgstr "Zastaviť všetky workery"
+
+msgid "Failed (Requires attention)"
+msgstr "Zlyhané (Vyžadujú pozornosť)"
+
+msgid "View all in browser"
+msgstr "Zobraziť všetky v prehliadači"
+
+msgid "Recently processed"
+msgstr "Nedávno spracované"
+
+msgid "Respatch"
+msgstr "Respatch"
+
+msgid "Welcome to Respatch"
+msgstr "Vitajte v Respatch"
+
+msgid "Add your first Symfony Messenger project to monitor queues."
+msgstr "Pridajte svoj prvý Symfony Messenger projekt, aby ste mohli sledovať fronty."
+
+msgid "Add project"
+msgstr "Pridať projekt"
+
+msgid "Cancel"
+msgstr "Zrušiť"
+
+msgid "Verify"
+msgstr "Overiť"
+
+msgid "Project name"
+msgstr "Názov projektu"
+
+msgid "API URL"
+msgstr "URL adresa API"
+
+msgid "Secret code (Token)"
+msgstr "Secret kód (Token)"
+
+msgid "Edit project"
+msgstr "Upraviť projekt"
+
+msgid "Save"
+msgstr "Uložiť"
+
+msgid "Verifying..."
+msgstr "Overovanie..."
+
+msgid "Try again"
+msgstr "Skúsiť znova"
+
+msgid "Verification failed: "
+msgstr "Nepodarilo sa overiť: "
+
+msgid "No transports"
+msgstr "Žiadne transporty"
+
+msgid "No messages"
+msgstr "Žiadne správy"
+
+msgid "No servers added."
+msgstr "Žiadne servery nie sú pridané."
+
+msgid "Messenger"
+msgstr "Messenger"
+
+msgid "Settings for Symfony Messenger Monitor."
+msgstr "Nastavenia pre Symfony Messenger Monitor."
+
+msgid "Dashboard URL"
+msgstr "URL dashboardu"
+
+msgid "Browser"
+msgstr "Prehliadač"
+
+msgid "Browser used for opening links."
+msgstr "Prehliadač, ktorý sa použije pri otváraní odkazov."
+
+msgid "Browser command"
+msgstr "Príkaz prehliadača"
+
+msgid "Diagnostics"
+msgstr "Diagnostika"
+
+msgid "Logging"
+msgstr "Logovanie"
+
+msgid "Application diagnostic logs configuration."
+msgstr "Konfigurácia diagnostických záznamov aplikácie."
+
+msgid "Enable logging"
+msgstr "Povoliť logovanie"
+
+msgid "Record application runtime information for debugging purposes."
+msgstr "Zaznamenávať informácie o behu aplikácie pre účely ladenia."
+
+msgid "Write logs to file"
+msgstr "Zapisovať logy do súboru"
+
+msgid "Save logs to ~/.local/share/respatch/respatch.log"
+msgstr "Ukladať záznamy do ~/.local/share/respatch/respatch.log"
+
+msgid "Log path"
+msgstr "Cesta k logu"
+
+msgid "Servers"
+msgstr "Servery"
+
+msgid "Add server"
+msgstr "Pridať server"
+
+msgid "Resume auto-refresh"
+msgstr "Obnoviť obnovovanie"
+
+msgid "Failed to load data"
+msgstr "Nepodarilo sa načítať dáta"
+
+msgid "Server is currently unavailable."
+msgstr "Server je momentálne nedostupný."
+
+msgid "Failed to load data. Server is unavailable."
+msgstr "Nepodarilo sa načítať dáta. Server je nedostupný."
+
+msgid "Showing %d of %d messages. Click to open all in browser."
+msgstr "Zobrazuje sa %d z %d správ. Kliknutím otvoríte všetky v prehliadači."
+
+msgid "OK"
+msgstr "OK"
+
+msgid "Unknown error"
+msgstr "Neznáma chyba"
+
+msgid "Message deleted"
+msgstr "Správa bola vymazaná"
+
+msgid "Retry attempt was successful"
+msgstr "Pokus o opätovné odoslanie bol úspešný"
+
+msgid "Action failed: "
+msgstr "Akcia zlyhala: "
+
+msgid "Show transport details"
+msgstr "Zobraziť detail transportu"
+
+msgid "Retry"
+msgstr "Opakovať"
+
+msgid "Delete"
+msgstr "Vymazať"
+
+msgid "Message failed"
+msgstr "Zlyhala správa"
+
+msgid "Transport \"%s\" contains a new failed message."
+msgstr "Transport \"%s\" obsahuje novú zlyhavšiu správu."
+
+msgid "Critical system state"
+msgstr "Kritický stav systému"
+
+msgid "%d new failed messages detected. Check your transports status."
+msgstr "Zistených %d nových zlyhaných správ. Skontrolujte stav vašich transportov."
+
+msgid "%s messages • %d workers • %s memory"
+msgstr "%s správ • %d workerov • %s memory"
+
+msgid "%d message waiting for intervention"
+msgid_plural "%d messages waiting for intervention"
+msgstr[0] "%d správa čaká na zásah"
+msgstr[1] "%d správy čakajú na zásah"
+msgstr[2] "%d správ čaká na zásah"

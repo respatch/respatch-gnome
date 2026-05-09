@@ -19,19 +19,19 @@ Adw.ApplicationWindow window {
                     Adw.HeaderBar {
                         [title]
                         Gtk.DropDown server_switcher {
-                            tooltip-text: _("Prepnúť server");
+                            tooltip-text: _("Switch server");
                         }
                         [start]
-                        Gtk.Button { icon-name: "view-refresh-symbolic"; tooltip-text: _("Načítať znova"); }
+                        Gtk.Button { icon-name: "view-refresh-symbolic"; tooltip-text: _("Reload"); }
                         [end]
                         Gtk.Button manage_servers_button {
                             icon-name: "network-server-symbolic";
-                            tooltip-text: _("Spravovať servery");
+                            tooltip-text: _("Manage servers");
                         }
                         [end]
                         Gtk.Button settings_button {
                             icon-name: "emblem-system-symbolic";
-                            tooltip-text: _("Nastavenia");
+                            tooltip-text: _("Settings");
                         }
                     }
 
@@ -64,7 +64,7 @@ Adw.ApplicationWindow window {
                                     margin-bottom: 4;
 
                                     Gtk.Label {
-                                        label: _("Zlyhané transporty");
+                                        label: _("Failed transports");
                                         hexpand: true;
                                         halign: start;
                                         styles ["heading"]
@@ -72,7 +72,7 @@ Adw.ApplicationWindow window {
 
                                     Gtk.Button failed_transport_pause_button {
                                         icon-name: "media-playback-pause-symbolic";
-                                        tooltip-text: _("Pozastaviť obnovovanie");
+                                        tooltip-text: _("Pause auto-refresh");
                                         styles ["flat", "circular"]
                                     }
                                 }
@@ -97,7 +97,7 @@ Adw.ApplicationWindow window {
                                     margin-bottom: 4;
 
                                     Gtk.Label {
-                                        label: _("Transporty");
+                                        label: _("Transports");
                                         hexpand: true;
                                         halign: start;
                                         styles ["heading"]
@@ -105,7 +105,7 @@ Adw.ApplicationWindow window {
 
                                     Gtk.Button transport_pause_button {
                                         icon-name: "media-playback-pause-symbolic";
-                                        tooltip-text: _("Pozastaviť obnovovanie");
+                                        tooltip-text: _("Pause auto-refresh");
                                         styles ["flat", "circular"]
                                     }
                                 }
@@ -128,7 +128,7 @@ Adw.ApplicationWindow window {
                     [top]
                     Adw.HeaderBar {
                         [end]
-                        Gtk.Button { icon-name: "media-playback-pause-symbolic"; tooltip-text: _("Zastaviť všetky workery"); }
+                        Gtk.Button { icon-name: "media-playback-pause-symbolic"; tooltip-text: _("Stop all workers"); }
                         [end]
                         Gtk.MenuButton { icon-name: "open-menu-symbolic"; }
                     }
@@ -152,11 +152,11 @@ Adw.ApplicationWindow window {
                                     orientation: vertical;
 
                                     Adw.PreferencesGroup {
-                                        title: _("Zlyhané (Vyžadujú pozornosť)");
+                                        title: _("Failed (Requires attention)");
 
                                         header-suffix: Gtk.Button failed_messages_overflow_button {
                                             icon-name: "web-browser-symbolic";
-                                            tooltip-text: _("Zobraziť všetky v prehliadači");
+                                            tooltip-text: _("View all in browser");
                                             visible: false;
                                             valign: center;
                                             styles ["flat", "circular"]
@@ -171,7 +171,7 @@ Adw.ApplicationWindow window {
 
                                 // --- BLOK 2: ÚSPEŠNÉ SPRÁVY ---
                                 Adw.PreferencesGroup {
-                                    title: _("Nedávno spracované");
+                                    title: _("Recently processed");
 
                                     header-suffix: Gtk.Box {
                                         orientation: horizontal;
@@ -180,7 +180,7 @@ Adw.ApplicationWindow window {
 
                                         Gtk.Button recent_messages_overflow_button {
                                             icon-name: "web-browser-symbolic";
-                                            tooltip-text: _("Zobraziť všetky v prehliadači");
+                                            tooltip-text: _("View all in browser");
                                             visible: false;
                                             valign: center;
                                             styles ["flat", "circular"]
@@ -188,7 +188,7 @@ Adw.ApplicationWindow window {
 
                                         Gtk.Button recent_messages_pause_button {
                                         icon-name: "media-playback-pause-symbolic";
-                                        tooltip-text: _("Pozastaviť obnovovanie");
+                                        tooltip-text: _("Pause auto-refresh");
                                         valign: center;
                                         styles ["flat", "circular"]
                                         }

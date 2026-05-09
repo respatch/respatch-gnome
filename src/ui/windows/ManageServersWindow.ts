@@ -41,7 +41,7 @@ export class ManageServersWindow {
         const projects = this.store.getProjects();
         if (projects.length === 0) {
             const emptyLabel = new Gtk.Label({
-                label: _('Žiadne servery nie sú pridané.'),
+                label: _('No servers added.'),
                 margin_top: 12,
                 margin_bottom: 12
             });
