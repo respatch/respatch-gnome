@@ -86,6 +86,11 @@ export interface PollingSectionConfig<TItem, TResponse> {
     keyOf: (item: TItem) => string;
     /** Creates a new row controller for an item that did not exist yet. */
     createRow: (item: TItem) => RowController<TItem>;
+    /**
+     * Called after every successful render with the stable keys of ALL currently
+     * visible items.  Use this to drive side-effects such as system notifications.
+     */
+    onRenderedKeys?: (keys: string[]) => void;
 }
 
 /**
@@ -273,6 +278,10 @@ export class PollingSection<TItem, TResponse> {
 
         this.updateOverflowButton();
         this.updateEmptyState();
+
+        if (this.config.onRenderedKeys) {
+            this.config.onRenderedKeys([...this.rows.keys()]);
+        }
     }
 
     /**

@@ -1,47 +1,77 @@
-# Respatch
+# Respatch 🚀
 
-Respatch je vývojársky nástroj na monitorovanie Symfony Messenger front, postavený ako natívna GNOME desktopová aplikácia s využitím TypeScriptu, GJS, GTK4, Libadwaita a Blueprint.
+### Modern monitoring for your Symfony Messenger right on your desktop.
 
-## Požiadavky (Prerekvizity)
+[![Respatch Screenshot](data/screenshot.png)](data/screenshot.png)
 
-Pre správne zostavenie a spustenie aplikácie musíš mať na systéme nainštalované nasledujúce závislosti:
-- **Node.js** a **npm**
-- **gjs** (GNOME JavaScript bindings)
-- **blueprint-compiler** (pre kompiláciu `.blp` súborov na `.ui`)
+**Respatch** is a native Linux application designed for developers and administrators who need a complete overview of what's happening in their Symfony Messenger. No more constantly refreshing web interfaces – Respatch brings you important information in real time, directly in your desktop environment.
 
-## Ako spustiť aplikáciu na otestovanie
+---
 
-Závislosti projektu nainštaluješ pomocou príkazu:
+## ✨ Key Features
 
-```bash
-npm install
-```
+- 📊 **Complete transport overview:** Monitor the status of all your transports in one place.
+- 🕒 **Message history:** Instant access to a list of recently processed messages.
+- ⚠️ **Failure management:** A clear list of failed messages with the option to immediately retry or delete them.
+- 🔔 **System notifications:** Receive desktop notifications when messages fail, so you never miss a critical issue.
+- 🖥️ **System integration:** Uses modern GNOME libraries (GTK4 + Libadwaita) for a clean, native look and smooth performance.
+- 🌐 **Multi-server support:** Easily switch between different projects and environments.
 
-Pre skompilovanie TypeScriptu, Blueprint súborov a okamžité spustenie aplikácie použi príkaz:
+## 🛠️ How does it work?
 
-```bash
-npm run start
-```
+Respatch is built on a modern technology stack:
+- **GJS (GNOME JavaScript):** Engine using SpiderMonkey for native JavaScript execution in GNOME.
+- **GTK4 & Libadwaita:** The latest technologies for building user interfaces following the Human Interface Guidelines.
+- **TypeScript:** For robust and type-safe code.
+- **Blueprint:** A declarative language for clean UI design.
 
-Tento príkaz automaticky spustí `npm run build` (ktorý najskôr cez `blueprint-compiler` vytvorí `.ui` súbory v priečinku `dist/ui` a následne skompiluje TypeScript do `dist/main.js`) a spustí výslednú aplikáciu.
+## 🔮 The future is native
 
-Ak chceš len zostaviť aplikáciu bez jej spustenia, použi:
+Although Respatch is currently focused on Linux distributions using GNOME, a **native Windows version** is planned for the near future, to bring the same monitoring comfort to all developers regardless of their operating system.
 
-```bash
-npm run build
-```
+---
 
-## Ako spúšťať testy
+## 🚀 Installation & Setup
 
-Projekt používa testovací framework [Vitest](https://vitest.dev/). Na spustenie všetkých testov použi príkaz:
+### 1. Server-side (Prerequisite)
+For the application to work correctly, you need to have **[respatch-bundle](https://github.com/respatch/respatch-bundle)** installed and configured on your Symfony server. This bundle provides the necessary API interface and is built on top of the popular `zenstruck/messenger-monitor-bundle`.
 
-```bash
-npm run test
-```
+### 2. Desktop Application
 
-Testy sa nachádzajú v priečinku `tests/`.
+#### System Requirements (Linux)
+- GJS
+- GTK4 and Libadwaita
+- Node.js (for the build process)
 
-## Vývoj
+#### Installation Steps
 
-- **UI Blueprinty:** Užívateľské rozhranie definujeme v priečinku `src/ui/` pomocou `.blp` (Blueprint) súborov, ktoré sú modernou a jednoduchšou alternatívou k XML `.ui` súborom od GTK.
-- **Hlavný kód:** Aplikačná logika sa nachádza v `src/main.ts`.
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/respatch/respatch.git
+   cd respatch/app
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Build the application:**
+   ```bash
+   npm run build
+   ```
+
+4. **Run:**
+   ```bash
+   npm run start
+   ```
+
+---
+
+## 🤝 Contributing
+
+Have an idea for improvement or found a bug? We'd love it if you opened an Issue or sent a Pull Request!
+
+---
+
+*Developed with love for the PHP community.* ❤️

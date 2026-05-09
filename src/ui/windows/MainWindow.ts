@@ -14,6 +14,7 @@ import { RecentMessageRow } from '../widgets/RecentMessageRow.js';
 import { FailedMessageRow } from '../widgets/FailedMessageRow.js';
 import { PollingSection } from '../widgets/PollingSection.js';
 import { MessageActionHandler } from '../widgets/MessageActionHandler.js';
+import { NotificationService } from '../../services/NotificationService.js';
 import type {TransportInfo, TransportsResponse} from '../../models/Transport.js';
 import type { RecentMessage, RecentMessagesResponse } from '../../models/RecentMessage.js';
 import type { FailedMessage, FailedMessagesResponse } from '../../models/FailedMessage.js';
@@ -38,6 +39,7 @@ export class MainWindow {
     private projects: Project[] = [];
 
     private readonly browserService: BrowserService;
+    private readonly notificationService: NotificationService;
     private readonly failedTransportsSection: PollingSection<FailedTransportItem, TransportsResponse>;
     private readonly transportSection: PollingSection<TransportItem, TransportsResponse>;
     private readonly recentMessagesSection: PollingSection<RecentMessage, RecentMessagesResponse>;
@@ -53,6 +55,7 @@ export class MainWindow {
         private readonly settingsService: SettingsService
     ) {
         this.browserService = new BrowserService(settingsService, () => this.getActiveProject());
+        this.notificationService = new NotificationService(app);
         const builder = new Gtk.Builder();
         builder.add_from_file(`${uiDir}/ui/main.ui`);
 
@@ -148,12 +151,14 @@ export class MainWindow {
     private createFailedTransportsSection(builder: Gtk.Builder, uiDir: string): PollingSection<FailedTransportItem, TransportsResponse> {
         const list = builder.get_object('failed_transport_list') as Gtk.ListBox;
         const container = builder.get_object('failed_transports_box') as Gtk.Widget;
+        const pauseBtn = builder.get_object('failed_transport_pause_button') as Gtk.Button;
 
         return new PollingSection<FailedTransportItem, TransportsResponse>({
             name: 'FailedTransports',
             listBox: list,
             hideWhenEmpty: true,
             containerWidget: container,
+            pauseButton: pauseBtn,
             toastOverlay: this.toastOverlay,
             intervalSeconds: POLL_INTERVAL_SECONDS,
             logger: this.logger,
@@ -208,7 +213,7 @@ export class MainWindow {
             toItems: (response) => Object.entries(response).map(([name, info]) => ({ name, info })),
             keyOf: (item) => item.name,
             createRow: (item) => {
-                const tr = new TransportRow(item.name, uiDir, this.browserService);
+                const tr = new TransportRow(item.name, uiDir);
                 transportRowMap.set(tr.getWidget(), tr);
                 return tr;
             },
@@ -300,6 +305,7 @@ export class MainWindow {
             toItems: (response) => response,
             keyOf: (msg) => `${msg.transport}:${msg.id}`,
             createRow: () => new FailedMessageRow(uiDir, actionHandler.createHandler()),
+            onRenderedKeys: (keys) => this.notificationService.processFailedMessages(keys),
         });
     }
 }
