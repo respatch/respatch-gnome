@@ -27,5 +27,6 @@ modules:
   - name: respatch
     buildsystem: meson
     sources:
-      - type: dir
-        path: .
+        - type: git
+          url: https://github.com/respatch/respatch-gnome
+          branch: main
