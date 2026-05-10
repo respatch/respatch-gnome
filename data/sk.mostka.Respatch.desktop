@@ -2,7 +2,7 @@
 Name=Respatch
 Comment=Symfony Messenger Monitor
 Exec=respatch
-Icon=sk.tito10047.respatch
+Icon=sk.mostka.Respatch
 Terminal=false
 Type=Application
 Categories=Development;

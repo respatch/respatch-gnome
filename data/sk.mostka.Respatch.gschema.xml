@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-  <schema id="org.respatch" path="/org/respatch/hq/">
+  <schema id="sk.mostka.Respatch" path="/sk/mostka/Respatch/">
     <key name="projects" type="as">
       <default>[]</default>
       <summary>Saved projects</summary>

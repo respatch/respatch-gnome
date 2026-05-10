@@ -23,7 +23,7 @@ export const Application = GObject.registerClass({
 
     constructor() {
         super({
-            application_id: 'sk.tito10047.respatch',
+            application_id: 'sk.mostka.Respatch',
             flags: Gio.ApplicationFlags.FLAGS_NONE,
         });
     }

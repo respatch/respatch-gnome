@@ -5,7 +5,7 @@ export class SettingsService {
     private settings: Gio.Settings;
 
     constructor() {
-        this.settings = new Gio.Settings({ schema_id: 'org.respatch' });
+        this.settings = new Gio.Settings({ schema_id: 'sk.mostka.Respatch' });
     }
 
     public getSettings(): Gio.Settings {

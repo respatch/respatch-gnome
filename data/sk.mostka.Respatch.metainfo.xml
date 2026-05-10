@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-    <id>sk.tito10047.respatch</id>
+    <id>sk.mostka.Respatch</id>
     <metadata_license>CC0-1.0</metadata_license>
     <project_license>MIT</project_license>
     <name>Respatch</name>
     <summary>Monitor Symfony Messenger transports and failed messages</summary>
     <description>
+        <p>Note: Respatch is a client application that requires a running Symfony Messenger server with the Respatch monitoring endpoint enabled. See the project homepage for setup instructions.</p>
         <p>
             Respatch is a specialized monitoring tool designed specifically for Symfony Messenger.
             It provides a real-time overview of your message transports, allowing you to track
@@ -18,27 +19,27 @@
             <li>Native GNOME experience</li>
         </ul>
     </description>
-    <developer id="sk.tito10047">
+    <developer id="sk.mostka">
         <name>Jozef Môstka</name>
     </developer>
-    <launchable type="desktop-id">sk.tito10047.respatch.desktop</launchable>
+    <launchable type="desktop-id">sk.mostka.Respatch.desktop</launchable>
     <screenshots>
         <screenshot type="default">
             <caption>Main application window showing transport status</caption>
-            <image type="source" width="1920" height="1080">https://raw.githubusercontent.com/respatch/respatch-gnome/main/data/main-screen.png</image>
+            <image type="source" width="1920" height="1080">https://raw.githubusercontent.com/mostka-sk/respatch-gnome/main/data/main-screen.png</image>
         </screenshot>
         <screenshot>
             <caption>Application screencast</caption>
-            <video codec="vp9" container="webm" width="1920" height="1080">https://raw.githubusercontent.com/respatch/respatch-gnome/main/data/screencast.webm</video>
+            <video codec="vp9" container="webm" width="1920" height="1080">https://raw.githubusercontent.com/mostka-sk/respatch-gnome/main/data/screencast.webm</video>
         </screenshot>
     </screenshots>
-    <url type="homepage">https://github.com/respatch/respatch-gnome</url>
-    <url type="bugtracker">https://github.com/respatch/respatch-gnome/issues</url>
+    <url type="homepage">https://github.com/mostka-sk/respatch-gnome</url>
+    <url type="bugtracker">https://github.com/mostka-sk/respatch-gnome/issues</url>
     <content_rating type="oars-1.1" />
     <releases>
-        <release version="0.1.1-beta" date="2025-05-10">
+        <release version="1.0.0" date="2026-05-10">
             <description>
-                <p>Initial beta release of Respatch.</p>
+                <p>First stable release of Respatch.</p>
             </description>
         </release>
     </releases>
