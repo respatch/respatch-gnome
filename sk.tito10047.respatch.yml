@@ -3,6 +3,11 @@ runtime: org.gnome.Platform
 runtime-version: '46'
 sdk: org.gnome.Sdk
 command: respatch
+build-options:
+  env:
+    FLATPAK_BUILDER_BUILDTYPE: release
+separate-locales: false
+appstream-compose: false
 finish-args:
     - --share=network
     - --share=ipc
@@ -26,16 +31,14 @@ modules:
     buildsystem: simple
     sources:
         - type: file
-          url: https://github.com/evanw/esbuild/releases/download/v0.28.0/esbuild-linux-64.tgz
-            # Ak ti vypíše chybu SHA256, skopíruj ten správny hash z chybovej hlášky sem:
-          sha256: 01f19d2737504381534015f62e8419614457e5102008e3532454536768787f73
+          url: https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.21.1.tgz
+          sha256: e73bfdec6c266532abb24a9019586b4d13cf6bc7e0b79a6aff22b919687d9a45
     build-commands:
-        - tar -xf esbuild-linux-64.tgz
-        - install -D esbuild /app/bin/esbuild
+        - tar -xf linux-x64-0.21.1.tgz
+        - install -D package/bin/esbuild /app/bin/esbuild
   # 3. Samotná aplikácia
   - name: respatch
     buildsystem: meson
     sources:
-        - type: git
-          url: https://github.com/respatch/respatch-gnome
-          branch: main
+        - type: dir
+          path: .

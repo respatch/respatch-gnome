@@ -1,3 +1,8 @@
+# Inštalácia ikony
+install_data('icons/hicolor/scalable/apps/sk.tito10047.respatch.svg',
+  install_dir: get_option('datadir') / 'icons/hicolor/scalable/apps'
+)
+
 # Inštalácia schémy
 install_data('sk.tito10047.respatch.gschema.xml',
   install_dir: get_option('datadir') / 'glib-2.0/schemas'
