@@ -1,6 +1,6 @@
 ---
 sessionId: session-260510-021021-135l
-isActive: true
+isActive: false
 ---
 
 # Requirements
@@ -318,7 +318,7 @@ Aplikácia, manifest a všetky dátové súbory používajú nový App ID `sk.mo
 - Aktualizovať `pr_message.md` na nový App ID a URL repa.
 - Lokálne overenie: `flatpak-builder --user --install --force-clean build-dir sk.mostka.Respatch.yml` + `flatpak run sk.mostka.Respatch`.
 
-### * Step 2: Stabilná verzia 1.0.0, GNOME runtime 47, host-dependent disclosure
+### ✓ Step 2: Stabilná verzia 1.0.0, GNOME runtime 47, host-dependent disclosure
 Aplikácia je release-ready: verzia `1.0.0`, runtime 47, metainfo deklaruje host-dependent charakter; lokálny build prejde, `appstreamcli validate --pedantic --no-net` prejde bez warningov.
 
 - V `data/sk.mostka.Respatch.metainfo.xml` aktualizovať `<release>` na `version="1.0.0"` s aktuálnym dátumom a release notes (`<description><p>First stable release.</p></description>`).
@@ -329,7 +329,7 @@ Aplikácia je release-ready: verzia `1.0.0`, runtime 47, metainfo deklaruje host
 - Spustiť lokálne `appstreamcli validate --pedantic --no-net data/sk.mostka.Respatch.metainfo.xml` — musí prejsť bez chýb.
 - Lokálne overenie buildu na novom runtime 47: `flatpak-builder --user --install --force-clean build-dir sk.mostka.Respatch.yml` + `flatpak run sk.mostka.Respatch`; ak sa objavia GTK/libadwaita deprecation warningy, opraviť kód.
 
-###   Step 3: Build esbuild zo zdrojov v Go
+### ✓ Step 3: Build esbuild zo zdrojov v Go
 Manifest neobsahuje žiadny precompiled binary; esbuild sa buildí lokálne v sandboxe z oficiálneho upstream zdrojového archívu pomocou Go SDK extension.
 
 - V manifeste `sk.mostka.Respatch.yml` pridať `sdk-extensions: [org.freedesktop.Sdk.Extension.golang]`.
@@ -341,7 +341,7 @@ Manifest neobsahuje žiadny precompiled binary; esbuild sa buildí lokálne v sa
 - To isté skopírovať aj do Flathub manifestu v `flathub-respatch/sk.mostka.Respatch/sk.mostka.Respatch.yml`.
 - Lokálne overenie: čistý build cez `flatpak-builder` musí postaviť esbuild a aplikáciu úspešne; spustenie aplikácie potvrdí funkčnosť.
 
-###   Step 4: Generovanie a integrácia npm dependency manifestu
+### ✓ Step 4: Generovanie a integrácia npm dependency manifestu
 Všetky NPM závislosti sú deklarované v `generated-sources.json` ako file sources s URL + sha256; offline `npm ci` počas Flatpak buildu prejde bez sieťového prístupu.
 
 - Nainštalovať tooling: `pip install --user flatpak-node-generator` (alebo cez git clone z `flatpak/flatpak-builder-tools`).
@@ -355,7 +355,7 @@ Všetky NPM závislosti sú deklarované v `generated-sources.json` ako file sou
 - Skopírovať tie isté zmeny do Flathub manifestu.
 - Lokálne overenie offline buildu: `flatpak-builder --disable-rofiles-fuse --user --install --force-clean build-dir sk.mostka.Respatch.yml` musí prejsť (na novom čistom systéme bez npm cache).
 
-###   Step 5: Inštalácia LICENSE súborov pre všetky moduly
+### ✓ Step 5: Inštalácia LICENSE súborov pre všetky moduly
 Po inštalácii sú v `$FLATPAK_DEST/share/licenses/sk.mostka.Respatch/` license súbory pre `respatch`, `blueprint-compiler` a `esbuild` v predpísanej štruktúre podľa Flathub Requirements.
 
 - Vytvoriť `LICENSE` (MIT, plný text) na top-level app repa s Copyright Jozef Marcin (alebo skutočné meno autora).
@@ -365,7 +365,7 @@ Po inštalácii sú v `$FLATPAK_DEST/share/licenses/sk.mostka.Respatch/` license
 - Synchronizovať to isté do Flathub manifestu.
 - Lokálne overenie: po `flatpak-builder ... --install` skontrolovať obsah `~/.local/share/flatpak/app/sk.mostka.Respatch/current/active/files/share/licenses/sk.mostka.Respatch/` — musí obsahovať tri podpriečinky.
 
-###   Step 6: Repository setup, Flathub manifest update a publish workflow
+### ✓ Step 6: Repository setup, Flathub manifest update a publish workflow
 Upstream repo `github.com/mostka-sk/respatch-gnome` obsahuje finálny kód s tagom `v1.0.0`; Flathub priečinok je pripravený na manuálne otvorenie PR používateľom.
 
 - **Manuálny krok používateľa:** vytvoriť GitHub org `mostka-sk` a repo `respatch-gnome` (verejný), potvrdiť agentovi.
