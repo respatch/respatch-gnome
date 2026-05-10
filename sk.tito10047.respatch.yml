@@ -26,7 +26,7 @@ modules:
     buildsystem: simple
     sources:
         - type: file
-          url: https://github.com/evanw/esbuild/releases/download/v0.28.0/esbuild-linux-64.tgz
+          url: https://github.com/evanw/esbuild/releases/download/v0.20.2/esbuild-linux-64.tgz
           sha256: 39a04a572c638e4df734d471542f206587373f7a810f3675e47854f052b610c1
     build-commands:
         # Pri GitHub releasoch je binárka priamo v roote archívu
