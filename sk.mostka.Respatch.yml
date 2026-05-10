@@ -65,6 +65,11 @@ modules:
   # 3. Samotná aplikácia
   - name: respatch
     buildsystem: meson
+    build-options:
+      env:
+        npm_config_offline: 'true'
+        npm_config_cache: /run/build/respatch/flatpak-node/npm-cache
     sources:
         - type: dir
           path: .
+        - generated-sources.json

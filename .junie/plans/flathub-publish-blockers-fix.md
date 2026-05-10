@@ -301,7 +301,7 @@ Nasledovné kroky **nemôže spraviť AI agent** — buď ide o akciu mimo loká
 
 # Delivery Steps
 
-### * Step 1: Premenovanie App ID na sk.mostka.Respatch (in progress)
+### ✓ Step 1: Premenovanie App ID na sk.mostka.Respatch
 Aplikácia, manifest a všetky dátové súbory používajú nový App ID `sk.mostka.Respatch` konzistentne; lokálny build cez `flatpak-builder` prejde a aplikácia sa spustí pod novým ID.
 
 - Premenovať fyzické súbory v `data/`: `sk.tito10047.respatch.metainfo.xml`, `sk.tito10047.respatch.desktop`, `sk.tito10047.respatch.Daemon.desktop`, `sk.tito10047.respatch.gschema.xml` a všetky ikony v `data/icons/hicolor/*/apps/` na nové názvy `sk.mostka.Respatch.*`.
@@ -318,7 +318,7 @@ Aplikácia, manifest a všetky dátové súbory používajú nový App ID `sk.mo
 - Aktualizovať `pr_message.md` na nový App ID a URL repa.
 - Lokálne overenie: `flatpak-builder --user --install --force-clean build-dir sk.mostka.Respatch.yml` + `flatpak run sk.mostka.Respatch`.
 
-###   Step 2: Stabilná verzia 1.0.0, GNOME runtime 47, host-dependent disclosure
+### * Step 2: Stabilná verzia 1.0.0, GNOME runtime 47, host-dependent disclosure
 Aplikácia je release-ready: verzia `1.0.0`, runtime 47, metainfo deklaruje host-dependent charakter; lokálny build prejde, `appstreamcli validate --pedantic --no-net` prejde bez warningov.
 
 - V `data/sk.mostka.Respatch.metainfo.xml` aktualizovať `<release>` na `version="1.0.0"` s aktuálnym dátumom a release notes (`<description><p>First stable release.</p></description>`).
