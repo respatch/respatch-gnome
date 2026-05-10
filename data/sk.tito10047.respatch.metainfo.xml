@@ -19,7 +19,7 @@
         </ul>
     </description>
     <developer id="sk.tito10047">
-        <name>Jozef Marcin</name>
+        <name>Jozef Môstka</name>
     </developer>
     <launchable type="desktop-id">sk.tito10047.respatch.desktop</launchable>
     <screenshots>
@@ -32,7 +32,7 @@
     <url type="bugtracker">https://github.com/respatch/respatch-gnome/issues</url>
     <content_rating type="oars-1.1" />
     <releases>
-        <release version="0.1.0-beta" date="2025-05-10">
+        <release version="0.1.1-beta" date="2025-05-10">
             <description>
                 <p>Initial beta release of Respatch.</p>
             </description>
