@@ -1,7 +1,14 @@
-# Inštalácia ikony
+# Inštalácia ikony (SVG - scalable)
 install_data('icons/hicolor/scalable/apps/sk.tito10047.respatch.svg',
   install_dir: get_option('datadir') / 'icons/hicolor/scalable/apps'
 )
+
+# Inštalácia PNG ikon (všetky veľkosti)
+foreach size : ['16x16', '32x32', '48x48', '64x64', '128x128', '256x256', '512x512']
+  install_data('icons/hicolor' / size / 'apps/sk.tito10047.respatch.png',
+    install_dir: get_option('datadir') / 'icons/hicolor' / size / 'apps'
+  )
+endforeach
 
 # Inštalácia schémy
 install_data('sk.tito10047.respatch.gschema.xml',
