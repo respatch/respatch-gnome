@@ -44,10 +44,7 @@ endforeach
 
 compiled_blueprints = blueprint_targets
 
-esbuild = find_program('esbuild', required: false)
-if not esbuild.found()
-  esbuild = find_program(meson.current_source_dir() / 'node_modules' / '.bin' / 'esbuild')
-endif
+esbuild = find_program('esbuild')
 
 main_js = custom_target('main-js',
   input: 'src/main.ts',

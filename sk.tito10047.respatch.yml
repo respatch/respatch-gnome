@@ -22,7 +22,15 @@ modules:
   # 2. Node.js (potrebný pre esbuild)
   # Poznámka: Pre jednoduchosť skúsime použiť SDK verziu esbuild,
   # ak by to zlyhalo, budeme musieť esbuild riešiť ako extra krok.
-
+  - name: esbuild
+    buildsystem: simple
+    sources:
+        - type: file
+          url: https://registry.npmjs.org/esbuild-linux-64/-/esbuild-linux-64-0.20.2.tgz
+          sha256: 099088656795f50228399e5256e6d1656a81a7051f67f92e59b9e69317b3c2e1
+    build-commands:
+        - tar -xf esbuild-linux-64-0.20.2.tgz
+        - install -D package/bin/esbuild /app/bin/esbuild
   # 3. Samotná aplikácia
   - name: respatch
     buildsystem: meson
