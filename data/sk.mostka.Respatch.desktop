@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Respatch
-Comment=Symfony Messenger Monitor
+Comment=Monitor message queues and errors
 Exec=respatch
 Icon=sk.mostka.Respatch
 Terminal=false

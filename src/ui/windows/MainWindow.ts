@@ -72,12 +72,13 @@ export class MainWindow {
         this.serverSwitcher = builder.get_object('server_switcher') as Gtk.DropDown;
         this.toastOverlay = builder.get_object('toast_overlay') as Adw.ToastOverlay;
         this.stringList = new Gtk.StringList();
-        this.setupServerSwitcher();
 
         this.failedTransportsSection = this.createFailedTransportsSection(builder, uiDir);
         this.transportSection = this.createTransportSection(builder, uiDir);
         this.recentMessagesSection = this.createRecentMessagesSection(builder, uiDir);
         this.failedMessagesSection = this.createFailedMessagesSection(builder, uiDir);
+
+        this.setupServerSwitcher();
 
         this.failedTransportsSection.start();
         this.transportSection.start();

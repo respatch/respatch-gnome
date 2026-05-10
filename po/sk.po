@@ -213,3 +213,6 @@ msgstr "O aplikácii"
 
 msgid "Programmed with love.\n\nThe entire application was coded via Junie under my detailed and expert supervision.\nI will be glad for new issues and feature requests on github.\nPlease leave a like on our repository!"
 msgstr "Naprogramované s láskou.\n\nCelá aplikácia bola nakódená cez Junie pod mojim podrobným a odborným dohľadom.\nBudem rád za nové issue a feature requesty na githube.\nProsím dajte nám like na náš repozitár!"
+
+msgid "Try Live Demo"
+msgstr "Vyskúšať Live Demo"

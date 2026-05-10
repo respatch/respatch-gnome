@@ -15,10 +15,20 @@ Adw.ApplicationWindow window {
             title: _("Welcome to Respatch");
             description: _("Add your first Symfony Messenger project to monitor queues.");
 
-            child: Gtk.Button add_project_button {
-                label: _("Add project");
+            child: Gtk.Box {
+                orientation: vertical;
+                spacing: 12;
                 halign: center;
-                styles ["pill", "suggested-action"]
+
+                Gtk.Button add_project_button {
+                    label: _("Add project");
+                    styles ["pill", "suggested-action"]
+                }
+
+                Gtk.Button live_demo_button {
+                    label: _("Try Live Demo");
+                    styles ["flat"]
+                }
             };
         };
     }

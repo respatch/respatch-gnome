@@ -4,7 +4,11 @@
     <metadata_license>CC0-1.0</metadata_license>
     <project_license>MIT</project_license>
     <name>Respatch</name>
-    <summary>Monitor Symfony Messenger transports and failed messages</summary>
+    <summary>Monitor message queues and errors</summary>
+    <branding>
+        <color type="primary" scheme_preference="light">#4a90e2</color>
+        <color type="primary" scheme_preference="dark">#2c3e50</color>
+    </branding>
     <description>
         <p>Note: Respatch is a client application that requires a running Symfony Messenger server with the Respatch monitoring endpoint enabled. See the project homepage for setup instructions.</p>
         <p>
@@ -24,11 +28,11 @@
     </developer>
     <launchable type="desktop-id">sk.mostka.Respatch.desktop</launchable>
     <screenshots>
-        <screenshot type="default">
+        <screenshot type="default" xml:lang="en">
             <caption>Main application window showing transport status</caption>
-            <image type="source" width="1920" height="1080">https://raw.githubusercontent.com/mostka-sk/respatch-gnome/main/data/main-screen.png</image>
+            <image type="source" width="1000" height="700">https://raw.githubusercontent.com/mostka-sk/respatch-gnome/main/data/main-screen.png</image>
         </screenshot>
-        <screenshot>
+        <screenshot xml:lang="en">
             <caption>Application screencast</caption>
             <video codec="vp9" container="webm" width="1920" height="1080">https://raw.githubusercontent.com/mostka-sk/respatch-gnome/main/data/screencast.webm</video>
         </screenshot>
