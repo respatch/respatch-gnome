@@ -2,6 +2,7 @@ import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 import type { SettingsService } from './SettingsService.js';
 import type { Project } from '../models/Project.js';
+import {LoggerService} from "./LoggerService";
 
 /**
  * Centralized service for building application URLs and opening them in a browser.
@@ -13,6 +14,7 @@ export class BrowserService {
     constructor(
         private readonly settingsService: SettingsService,
         private readonly getActiveProject: () => Project | null,
+        private readonly logger: LoggerService,
     ) {}
 
     // -------------------------------------------------------------------------
@@ -58,19 +60,12 @@ export class BrowserService {
      * the system default via `Gio.AppInfo.launch_default_for_uri`.
      */
     openUrl(url: string): void {
+        //TODO: Remove settings because in flatpack is not correct behavior to open browser via command
         const browser = this.settingsService.getPreferredBrowser().trim();
-        if (browser) {
-            try {
-                GLib.spawn_command_line_async(`${browser} ${url}`);
-                return;
-            } catch {
-                // fall through to system default
-            }
-        }
         try {
             Gio.AppInfo.launch_default_for_uri(url, null);
-        } catch {
-            // nothing we can do
+        } catch (e) {
+            this.logger.error(`Failed to open URL: ${url}`, { error: e });
         }
     }
 }

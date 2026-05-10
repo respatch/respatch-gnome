@@ -89,8 +89,8 @@ When the daemon detects new failed messages, it sends a native GNOME system noti
 The easiest way to install, configure, and start the background service (including all necessary permissions for notifications) is to use the provided installation script. This script automatically builds the service, sets up the paths, and registers the `Respatch Daemon` in the system:
 
 ```bash
-chmod +x bin/install_deamon.sh
-./bin/install_deamon.sh
+chmod +x bin/install_daemon.sh
+./bin/install_daemon.sh
 ```
 
 To check the service status after installation, you can call at any time:

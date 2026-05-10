@@ -100,3 +100,9 @@ install_data('src/respatch.sh',
   install_dir: get_option('bindir'),
   install_mode: 'rwxr-xr-x'
 )
+# Inštalácia spúšťacieho skriptu daemon s explicitnými právami (rwxr-xr-x)
+install_data('src/respatch-daemon.sh',
+  rename: 'respatch-daemon',
+  install_dir: get_option('bindir'),
+  install_mode: 'rwxr-xr-x'
+)

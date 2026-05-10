@@ -58,7 +58,7 @@ export class MainWindow {
         private readonly logger: LoggerService,
         private readonly settingsService: SettingsService
     ) {
-        this.browserService = new BrowserService(settingsService, () => this.getActiveProject());
+        this.browserService = new BrowserService(settingsService, () => this.getActiveProject(), this.logger);
         this.notificationService = new NotificationService(app);
         const builder = new Gtk.Builder();
         builder.add_from_file(`${uiDir}/ui/main.ui`);

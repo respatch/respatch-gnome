@@ -17,6 +17,9 @@ finish-args:
     - --socket=wayland
     - --device=dri
     - --talk-name=org.freedesktop.Notifications
+    - --metadata=X-D-Bus-Python-Terminology-Warning=n/a
+    - --filesystem=xdg-data/respatch:create
+    - --talk-name=org.freedesktop.portal.Desktop
 modules:
   # 1. Blueprint Compiler
   - name: blueprint-compiler
@@ -73,3 +76,8 @@ modules:
         - type: dir
           path: .
         - generated-sources.json
+cleanup:
+  - /bin/esbuild
+  - /bin/blueprint-compiler
+  - /share/licenses/sk.mostka.Respatch/esbuild
+  - /share/licenses/sk.mostka.Respatch/blueprint-compiler

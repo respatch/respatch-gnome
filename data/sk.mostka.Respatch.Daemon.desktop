@@ -1,9 +1,9 @@
 [Desktop Entry]
 Name=Respatch Daemon
 Comment=Background service for Respatch notifications
-Exec=true
-Icon=utilities-system-monitor
-Terminal=false
 Type=Application
+Exec=respatch-daemon
+Icon=sk.mostka.Respatch
+Terminal=false
 NoDisplay=true
-X-GNOME-UsesNotifications=true
+X-GNOME-Autostart-enabled=true
