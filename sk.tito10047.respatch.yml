@@ -26,11 +26,12 @@ modules:
     buildsystem: simple
     sources:
         - type: file
-          url: https://registry.npmjs.org/esbuild-linux-64/-/esbuild-linux-64-0.20.2.tgz
-          sha256: 099088656795f50228399e5256e6d1656a81a7051f67f92e59b9e69317b3c2e1
+          url: https://github.com/evanw/esbuild/releases/download/v0.28.0/esbuild-linux-64.tgz
+          sha256: 39a04a572c638e4df734d471542f206587373f7a810f3675e47854f052b610c1
     build-commands:
-        - tar -xf esbuild-linux-64-0.20.2.tgz
-        - install -D package/bin/esbuild /app/bin/esbuild
+        # Pri GitHub releasoch je binárka priamo v roote archívu
+        - tar -xf esbuild-linux-64.tgz
+        - install -D esbuild /app/bin/esbuild
   # 3. Samotná aplikácia
   - name: respatch
     buildsystem: meson
