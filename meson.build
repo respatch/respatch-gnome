@@ -106,3 +106,13 @@ install_data('src/respatch-daemon.sh',
   install_dir: get_option('bindir'),
   install_mode: 'rwxr-xr-x'
 )
+
+# Inštalácia desktop súboru pre daemona do aplikácií
+install_data('data/sk.mostka.Respatch.Daemon.desktop',
+  install_dir: get_option('datadir') / 'applications'
+)
+
+# Kľúčové pre automatické spustenie po štarte:
+install_data('data/sk.mostka.Respatch.Daemon.desktop',
+  install_dir: get_option('sysconfdir') / 'xdg' / 'autostart'
+)
