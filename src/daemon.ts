@@ -55,6 +55,28 @@ function setupServices() {
     apiClient = new ApiClient(gjsFetch);
     notificationService = new NotificationService(Daemon);
 
+    // Register notification mute actions
+    const mute1hAction = new Gio.SimpleAction({ name: 'mute-1h' });
+    mute1hAction.connect('activate', () => {
+        logger.info('Muting notifications for 1 hour');
+        notificationService.mute(3600);
+    });
+    Daemon.add_action(mute1hAction);
+
+    const mute1dAction = new Gio.SimpleAction({ name: 'mute-1d' });
+    mute1dAction.connect('activate', () => {
+        logger.info('Muting notifications for 1 day');
+        notificationService.mute(86400);
+    });
+    Daemon.add_action(mute1dAction);
+
+    const muteOffAction = new Gio.SimpleAction({ name: 'mute-off' });
+    muteOffAction.connect('activate', () => {
+        logger.info('Turning off notifications');
+        notificationService.mute(-1);
+    });
+    Daemon.add_action(muteOffAction);
+
     loadConfig();
 
     // Listen to changes in settings so we don't have to restart daemon

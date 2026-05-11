@@ -31,7 +31,27 @@ export class NotificationService {
     /** Timestamp (ms) of the last critical notification, or 0 if never sent. */
     private lastCriticalAt = 0;
 
+    /** Timestamp (ms) until notifications are muted, 0 if not muted, -1 for forever. */
+    private muteUntil = 0;
+
     constructor(private readonly app: Gio.Application) {}
+
+    /**
+     * Mutes notifications for a specific duration.
+     * @param seconds Duration in seconds, or -1 for forever.
+     */
+    mute(seconds: number): void {
+        if (seconds === -1) {
+            this.muteUntil = -1;
+        } else {
+            this.muteUntil = Date.now() + seconds * 1000;
+        }
+    }
+
+    private isMuted(): boolean {
+        if (this.muteUntil === -1) return true;
+        return Date.now() < this.muteUntil;
+    }
 
     /**
      * Called after every successful poll of the failed-messages endpoint.
@@ -54,11 +74,13 @@ export class NotificationService {
 
         if (newIds.length === 0) return;
 
-        if (newIds.length > CRITICAL_THRESHOLD) {
-            this.sendCriticalNotification(newIds.length);
-        } else {
-            for (const id of newIds) {
-                this.sendFailedMessageNotification(id);
+        if (!this.isMuted()) {
+            if (newIds.length > CRITICAL_THRESHOLD) {
+                this.sendCriticalNotification(newIds.length);
+            } else {
+                for (const id of newIds) {
+                    this.sendFailedMessageNotification(id);
+                }
             }
         }
 
@@ -79,6 +101,10 @@ export class NotificationService {
         );
         notification.set_priority(Gio.NotificationPriority.HIGH);
         notification.set_default_action('app.activate');
+
+        notification.add_button(_('Mute for 1 hour'), 'app.mute-1h');
+        notification.add_button(_('Mute for 1 day'), 'app.mute-1d');
+        notification.add_button(_('Turn off'), 'app.mute-off');
 
         // Use the message ID as notification ID so the same message never
         // produces more than one notification bubble.
@@ -105,6 +131,10 @@ export class NotificationService {
         );
         notification.set_priority(Gio.NotificationPriority.URGENT);
         notification.set_default_action('app.activate');
+
+        notification.add_button(_('Mute for 1 hour'), 'app.mute-1h');
+        notification.add_button(_('Mute for 1 day'), 'app.mute-1d');
+        notification.add_button(_('Turn off'), 'app.mute-off');
 
         this.app.send_notification('failed-msg-critical', notification);
     }
