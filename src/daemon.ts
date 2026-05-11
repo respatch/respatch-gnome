@@ -11,7 +11,7 @@ import { Project } from './models/Project.js';
 // Configuration
 const POLL_INTERVAL_SECONDS = 10;
 
-export const Daemon = Gio.Application.new('sk.tito10047.respatch.Daemon', Gio.ApplicationFlags.FLAGS_NONE);
+export const Daemon = Gio.Application.new('sk.mostka.Respatch.Daemon', Gio.ApplicationFlags.FLAGS_NONE);
 
 let settingsService: SettingsService;
 let apiClient: ApiClient;
