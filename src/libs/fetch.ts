@@ -80,6 +80,11 @@ export const gjsFetch = (uri: string, options: FetchOptions = {}): Promise<IResp
                 message.set_request_body_from_bytes('application/octet-stream', glibBytes);
             }
 
+            console.log(`[gjsFetch] Request: ${method} ${uri}`);
+            if (options.body !== undefined && options.body !== null) {
+                console.log(`[gjsFetch] Request Body: ${options.body}`);
+            }
+
             session.send_and_read_async(
                 message,
                 GLib.PRIORITY_DEFAULT,
@@ -101,13 +106,17 @@ export const gjsFetch = (uri: string, options: FetchOptions = {}): Promise<IResp
                         const data = bytes ? bytes.get_data() : null;
                         const u8 = data ? new Uint8Array(data) : new Uint8Array(0);
 
+                        console.log(`[gjsFetch] Response: ${status} ${reason} for ${uri}`);
+
                         resolve(new GjsResponse(status, reason, url, headers, u8));
                     } catch (e) {
+                        console.error(`[gjsFetch] Async response error for ${uri}:`, e);
                         reject(e instanceof Error ? e : new Error(String(e)));
                     }
                 },
             );
         } catch (e) {
+            console.error(`[gjsFetch] Request initiation error for ${uri}:`, e);
             reject(e instanceof Error ? e : new Error(String(e)));
         }
     });

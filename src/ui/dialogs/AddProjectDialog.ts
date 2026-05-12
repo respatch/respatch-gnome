@@ -86,6 +86,11 @@ export class AddProjectDialog {
     }
 
     private async verify(url: string, token: string) {
+        url = url.trim().replace(/\/status\/?$/, '');
+        if (this.urlInput.get_text() !== url) {
+            this.urlInput.set_text(url);
+        }
+
         this.actionBtn.set_sensitive(false);
         this.actionBtn.set_label(_('Verifying...'));
         this.logger.info(`Verifying project at ${url}`);

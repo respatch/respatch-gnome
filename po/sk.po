@@ -216,3 +216,6 @@ msgstr "Naprogramované s láskou.\n\nCelá aplikácia bola nakódená cez Junie
 
 msgid "Try Live Demo"
 msgstr "Vyskúšať Live Demo"
+
+msgid "Enter the plain text secret token here. The SHA-256 hash belongs to the server configuration."
+msgstr "Sem zadajte heslo (plain text). SHA-256 hash patrí do konfigurácie servera."
